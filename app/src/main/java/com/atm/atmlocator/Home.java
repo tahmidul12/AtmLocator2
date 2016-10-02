@@ -19,6 +19,7 @@ public class Home extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // i added a comment in home.java
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
