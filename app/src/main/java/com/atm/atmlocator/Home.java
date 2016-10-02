@@ -20,7 +20,7 @@ public class Home extends AppCompatActivity {
 
        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         // i added a comment in home.java
-        // i added a second comment from test add branch
+        // i added a second comment fromtest add branch
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
