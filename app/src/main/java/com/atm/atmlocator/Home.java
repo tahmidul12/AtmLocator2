@@ -1,13 +1,14 @@
 package com.atm.atmlocator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class Home extends AppCompatActivity {
 
@@ -17,10 +18,11 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().hide();
 
        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         // i added a comment in home.java
-        // i added a second comment from float add branch
+        // i added a second cot fromtest add branches
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -28,6 +30,18 @@ public class Home extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        goOnline();
+    }
+
+    private void goOnline(){
+        Intent intent = new Intent(Home.this, Online.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
