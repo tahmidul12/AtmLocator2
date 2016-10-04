@@ -1,5 +1,6 @@
 package com.atm.atmlocator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().hide();
 
        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         // i added a comment in home.java
@@ -28,6 +30,18 @@ public class Home extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        goOnline();
+    }
+
+    private void goOnline(){
+        Intent intent = new Intent(Home.this, Online.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
