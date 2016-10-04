@@ -5,5 +5,6 @@ package apiconstant;
  */
 
 public class Constant {
-    
+
+    public static double CIRCLE_RADIUS = 800;
 }
