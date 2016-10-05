@@ -8,6 +8,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -16,6 +17,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
 import apiconstant.Constant;
 
@@ -45,6 +48,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
             seekBarOnline.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                 int inprogress = 0;
                 int previousProgress = 0;
+                LatLngBounds bounds;
+                CameraUpdate cu;
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int nowProgress, boolean b) {
                     Log.d("SHAKIL", "progress i = "+nowProgress);
@@ -64,6 +69,10 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
 
                         //if(radOfCir > 0)
                         circle.setRadius(radOfCir);
+                        //now adjust zoom to keep circle inside map and animate
+                        bounds = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+                        mMap.animateCamera(cu);
                     }else{
                         if(cirCurrentRadius > progressUnit)
                             decrementInCirRadius = cirCurrentRadius - progressUnit;
@@ -74,6 +83,10 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                         if(radOfCir < Constant.CIRCLE_RADIUS_MIN)
                             radOfCir = Constant.CIRCLE_RADIUS_MIN;
                         circle.setRadius(radOfCir);
+                        //now adjust zoom to keep circle inside map and animate
+                        bounds = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+                        mMap.animateCamera(cu);
                     }
                     previousProgress = nowProgress;
                 }
@@ -106,6 +119,11 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         //setting the camera with the specified location and animate in map
         CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 5000, null);
+    }
+    public LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
     }
 
 }
