@@ -18,7 +18,13 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import apiconstant.Constant;
 
@@ -33,6 +39,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
     private TextView textv_seekOnline;
     private SeekBar seekBarOnline;
     private Circle circle;
+    private List<Polygon> listPoly;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +55,11 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
             seekBarOnline.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                 int inprogress = 0;
                 int previousProgress = 0;
-                LatLngBounds bounds;
+                LatLngBounds bound;
                 CameraUpdate cu;
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int nowProgress, boolean b) {
-                    Log.d("SHAKIL", "progress i = "+nowProgress);
+                    //Log.d("SHAKIL", "progress i = "+nowProgress);
                     int diff = nowProgress - previousProgress;
                     double incrementInCirRadius = 0, decrementInCirRadius = 0;
                     double cirCurrentRadius = circle.getRadius();
@@ -70,9 +77,26 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                         //if(radOfCir > 0)
                         circle.setRadius(radOfCir);
                         //now adjust zoom to keep circle inside map and animate
-                        bounds = toBounds(circle.getCenter(), radOfCir);
-                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
-                        mMap.animateCamera(cu);
+                        bound = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
+                        for(Polygon poly : listPoly) {
+                            poly.remove();
+                            Log.d("SHAKIL", "removed no:");
+                        }
+                        mMap.animateCamera(cu, 2000, new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                                setPolygon();
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+
+
+
                     }else{
                         if(cirCurrentRadius > progressUnit)
                             decrementInCirRadius = cirCurrentRadius - progressUnit;
@@ -84,25 +108,41 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                             radOfCir = Constant.CIRCLE_RADIUS_MIN;
                         circle.setRadius(radOfCir);
                         //now adjust zoom to keep circle inside map and animate
-                        bounds = toBounds(circle.getCenter(), radOfCir);
-                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
-                        mMap.animateCamera(cu);
+                        bound = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
+                        for(Polygon poly : listPoly) {
+                            poly.remove();
+                            Log.d("SHAKIL", "removed no:");
+                        }
+                        mMap.animateCamera(cu, 2000, new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                                setPolygon();
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+
                     }
                     previousProgress = nowProgress;
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    Log.d("SHAKIL", "on start tracking touch");
+                    //Log.d("SHAKIL", "on start tracking touch");
                     inprogress = seekBar.getProgress();
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d("SHAKIL", "on stop tracking touch");
+                    //Log.d("SHAKIL", "on stop tracking touch");
                 }
             });
         }
+        listPoly = new ArrayList<Polygon>();
     }
 
     @Override
@@ -113,17 +153,34 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         LatLng dhaka = new LatLng(23.7917399,90.4041357);
         LatLng mOffice = new LatLng(23.7936268,90.4005859);
         //creating and adding a circle
-        final CircleOptions circleOptions = new CircleOptions().center(mOffice).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
+        final CircleOptions circleOptions = new CircleOptions().center(mOffice).radius(Constant.CIRCLE_RADIUS_MIN)
+                .strokeColor(Color.BLUE).fillColor(getResources().getColor(R.color.clrs))
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
         //setting the camera with the specified location and animate in map
         CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 5000, null);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 3000, null);
     }
     public LatLngBounds toBounds(LatLng center, double radius) {
         LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
         LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
         return new LatLngBounds(southwest, northeast);
+    }
+
+    public void setPolygon() {
+        PolygonOptions polygonOptions = null;
+        Polygon polygon = null;
+        VisibleRegion bounds = mMap.getProjection().getVisibleRegion();
+        polygonOptions =  new PolygonOptions()
+                .add(new LatLng(bounds.latLngBounds.northeast.latitude, bounds.latLngBounds.northeast.longitude))
+                .add(new LatLng(bounds.latLngBounds.southwest.latitude, bounds.latLngBounds.northeast.longitude))
+                .add(new LatLng(bounds.latLngBounds.southwest.latitude, bounds.latLngBounds.southwest.longitude))
+                .add(new LatLng(bounds.latLngBounds.northeast.latitude, bounds.latLngBounds.southwest.longitude))
+                .strokeColor(Color.BLUE)
+                .fillColor(0x5500ff00);
+
+        polygon = mMap.addPolygon(polygonOptions);
+        listPoly.add(polygon);
     }
 
 }
