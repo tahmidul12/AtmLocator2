@@ -1,20 +1,38 @@
 package com.atm.atmlocator;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.SphericalUtil;
 
+import apiconstant.Constant;
+
+/*
+   using google map we have to implement the OnMapReadyCallback so when the map will be ready then we can add necessary attribute
+   ex: circle, marker to the map
+ */
 public class Online extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap mMap;
     private boolean mapReady = false;
+    private TextView textv_seekOnline;
+    private SeekBar seekBarOnline;
+    private Circle circle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +40,69 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //initialize layout components
+        textv_seekOnline = (TextView) findViewById(R.id.textv_seekOnline);
+        seekBarOnline = (SeekBar) findViewById(R.id.seekBarOnline);
+        if (seekBarOnline != null) {
+            seekBarOnline.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                int inprogress = 0;
+                int previousProgress = 0;
+                LatLngBounds bounds;
+                CameraUpdate cu;
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int nowProgress, boolean b) {
+                    Log.d("SHAKIL", "progress i = "+nowProgress);
+                    int diff = nowProgress - previousProgress;
+                    double incrementInCirRadius = 0, decrementInCirRadius = 0;
+                    double cirCurrentRadius = circle.getRadius();
+                    double progressUnit = ((double) nowProgress * Constant.CIRCLE_INCREMENT_UNIT);
+                    if(diff>0) {
+                        if(cirCurrentRadius > progressUnit)
+                            incrementInCirRadius = cirCurrentRadius - progressUnit;
+                        else
+                            incrementInCirRadius = progressUnit - cirCurrentRadius;
+                        double radOfCir = circle.getRadius() + incrementInCirRadius;
+                        // check for the radius max limit
+                        if(radOfCir > Constant.CIRCLE_RADIUS_MAX)
+                            radOfCir = Constant.CIRCLE_RADIUS_MAX;
+
+                        //if(radOfCir > 0)
+                        circle.setRadius(radOfCir);
+                        //now adjust zoom to keep circle inside map and animate
+                        bounds = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+                        mMap.animateCamera(cu);
+                    }else{
+                        if(cirCurrentRadius > progressUnit)
+                            decrementInCirRadius = cirCurrentRadius - progressUnit;
+                        else
+                            decrementInCirRadius = progressUnit - cirCurrentRadius;
+                        double radOfCir = circle.getRadius() - decrementInCirRadius;
+                        // check for neg radius neg radius will give error
+                        if(radOfCir < Constant.CIRCLE_RADIUS_MIN)
+                            radOfCir = Constant.CIRCLE_RADIUS_MIN;
+                        circle.setRadius(radOfCir);
+                        //now adjust zoom to keep circle inside map and animate
+                        bounds = toBounds(circle.getCenter(), radOfCir);
+                        cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+                        mMap.animateCamera(cu);
+                    }
+                    previousProgress = nowProgress;
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    Log.d("SHAKIL", "on start tracking touch");
+                    inprogress = seekBar.getProgress();
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    Log.d("SHAKIL", "on stop tracking touch");
+                }
+            });
+        }
     }
 
     @Override
@@ -31,7 +112,19 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         mMap = googleMap;
         LatLng dhaka = new LatLng(23.7917399,90.4041357);
         LatLng mOffice = new LatLng(23.7936268,90.4005859);
-        CameraPosition target = CameraPosition.builder().target(dhaka).zoom(15).build();
+        //creating and adding a circle
+        final CircleOptions circleOptions = new CircleOptions().center(mOffice).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
+                .strokeWidth(3);
+        circle = mMap.addCircle(circleOptions);
+        //setting the camera with the specified location and animate in map
+        CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 5000, null);
     }
+    public LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
+    }
+
 }
+

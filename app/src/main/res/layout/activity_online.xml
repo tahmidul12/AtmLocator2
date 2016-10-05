@@ -14,16 +14,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"/>
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
         />
+    <SeekBar
+        android:id="@+id/seekBarOnline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"/>
+    <TextView
+
+        android:id="@+id/textv_seekOnline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="seekbar progress value"
+        />
 
 </LinearLayout>
 </RelativeLayout>
+

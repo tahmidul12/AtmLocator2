@@ -5,6 +5,8 @@ package apiconstant;
  */
 
 public class Constant {
-
-    public static double CIRCLE_RADIUS = 800;
+    public static double CIRCLE_RADIUS_MIN = 800;
+    public static double CIRCLE_RADIUS_MAX = 30000;
+    public static double CIRCLE_INCREMENT_UNIT = 292;
 }
+
