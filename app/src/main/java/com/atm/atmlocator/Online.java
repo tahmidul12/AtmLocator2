@@ -69,6 +69,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private SeekBar seekBarOnline;
     private Circle circle;
     private List<Polygon> listPoly;
+    private List<Marker> listMarker;
 
     // for search menu on toolbar
     private ArrayList<String> stringArrayList;
@@ -139,6 +140,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                             @Override
                             public void onFinish() {
                                 //setPolygon();
+                                addMarker();
                             }
 
                             @Override
@@ -170,6 +172,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                             @Override
                             public void onFinish() {
                                 //setPolygon();
+                                removeMarker();
                             }
 
                             @Override
@@ -196,6 +199,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         }
         //init variables
         listPoly = new ArrayList<Polygon>();
+        listMarker = new ArrayList<Marker>();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
 
         //
@@ -280,11 +284,11 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 LatLng location = new LatLng(Double.parseDouble(lati), Double.parseDouble(loti));
                 //adding a marker
                 MarkerOptions myOffice = new MarkerOptions().position(location).title(bankName)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.markers));
                 marker = mMap.addMarker(myOffice);
                 searchView.setQuery(feedName, false);
                 searchView.clearFocus();
-                CameraPosition target = CameraPosition.builder().target(location).zoom(14).build();
+                CameraPosition target = CameraPosition.builder().target(location).zoom(16).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 2000, null);
                 return false;
             }
@@ -358,7 +362,33 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         //Log.d("SHAKIL", "total similar found="+c.getCount());
         mAdapter.changeCursor(c);
     }
+    private void addMarker () {
+        if (cursor.moveToFirst()) {
+            do{
+                double lat = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LAT)));
+                double longi = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI)));
+                String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                LatLng from = circle.getCenter();
+                LatLng to = new LatLng(lat, longi);
+                if(isInsideCircle(from, to)){
+                    //adding a marker
+                    MarkerOptions myOffice = new MarkerOptions().position(to).title(bankName)
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.markers));
+                    Marker marker1 = mMap.addMarker(myOffice);
+                    listMarker.add(marker1);
+                }
+            } while (cursor.moveToNext());
+        }
+    }
+    private void removeMarker(){
+        LatLng from = circle.getCenter();
+        for (Marker marker : listMarker){
+            LatLng to = marker.getPosition();
 
+            if(!isInsideCircle(from, to))
+                marker.remove();
+        }
+    }
     /*
      loader to load cursor which will provide the data for searchview as it needs a cursoradapter for suggestionAdapter
      so a cursor containing all atms data should be provided
@@ -456,6 +486,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     }
     private void resetDb(View v){
         getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
+    }
+    private boolean isInsideCircle(LatLng from, LatLng to){
+        double dis = SphericalUtil.computeDistanceBetween(from, to);
+        double rad = circle.getRadius();
+        if(dis <= rad)
+            return true;
+        return false;
     }
 }
 
