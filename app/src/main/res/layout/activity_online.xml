@@ -41,6 +41,13 @@
         android:layout_weight="1.5"
         android:text="seekbar progress value"
         />
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="reset db"
+        />
 
 </LinearLayout>
 </RelativeLayout>

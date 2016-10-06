@@ -1,38 +1,67 @@
 package com.atm.atmlocator;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import apiconstant.ApiSearch;
 import apiconstant.Constant;
 
 /*
    using google map we have to implement the OnMapReadyCallback so when the map will be ready then we can add necessary attribute
    ex: circle, marker to the map
  */
-public class Online extends AppCompatActivity implements OnMapReadyCallback {
+public class Online extends AppCompatActivity implements OnMapReadyCallback , LoaderManager.LoaderCallbacks<Cursor>{
 
     GoogleMap mMap;
     private boolean mapReady = false;
@@ -40,6 +69,22 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
     private SeekBar seekBarOnline;
     private Circle circle;
     private List<Polygon> listPoly;
+
+    // for search menu on toolbar
+    private ArrayList<String> stringArrayList;
+    private ArrayAdapter<String> adapter;
+
+    //as array adapter will not work
+    private static final String[] SUGGESTIONS = {
+            "Bauru", "Sao Paulo", "Rio de Janeiro",
+            "Bahia", "Mato Grosso", "Minas Gerais",
+            "Tocantins", "Rio Grande do Sul"
+    };
+    private SimpleCursorAdapter mAdapter;
+    MatrixCursor c;
+    public Cursor cursor;
+    Button button;
+    Marker marker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +94,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         //initialize layout components
+        button = (Button) findViewById(R.id.button1);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
+            }
+        });
         textv_seekOnline = (TextView) findViewById(R.id.textv_seekOnline);
         seekBarOnline = (SeekBar) findViewById(R.id.seekBarOnline);
         if (seekBarOnline != null) {
@@ -80,13 +132,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                         bound = toBounds(circle.getCenter(), radOfCir);
                         cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
                         for(Polygon poly : listPoly) {
-                            poly.remove();
-                            Log.d("SHAKIL", "removed no:");
+                            //poly.remove();
+                            //Log.d("SHAKIL", "removed no:");
                         }
                         mMap.animateCamera(cu, 2000, new GoogleMap.CancelableCallback() {
                             @Override
                             public void onFinish() {
-                                setPolygon();
+                                //setPolygon();
                             }
 
                             @Override
@@ -111,13 +163,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                         bound = toBounds(circle.getCenter(), radOfCir);
                         cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
                         for(Polygon poly : listPoly) {
-                            poly.remove();
-                            Log.d("SHAKIL", "removed no:");
+                            //poly.remove();
+                            //Log.d("SHAKIL", "removed no:");
                         }
                         mMap.animateCamera(cu, 2000, new GoogleMap.CancelableCallback() {
                             @Override
                             public void onFinish() {
-                                setPolygon();
+                                //setPolygon();
                             }
 
                             @Override
@@ -142,7 +194,21 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
                 }
             });
         }
+        //init variables
         listPoly = new ArrayList<Polygon>();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
+
+        //
+        //initCursor();
+        final String[] from = new String[] {"address"};
+        final int[] to = new int[] {android.R.id.text1};
+        mAdapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1,
+                null,
+                from,
+                to,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        getSupportLoaderManager().initLoader(1, null, this);
     }
 
     @Override
@@ -154,7 +220,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         LatLng mOffice = new LatLng(23.7936268,90.4005859);
         //creating and adding a circle
         final CircleOptions circleOptions = new CircleOptions().center(mOffice).radius(Constant.CIRCLE_RADIUS_MIN)
-                .strokeColor(Color.BLUE).fillColor(getResources().getColor(R.color.clrs))
+                .strokeColor(Color.BLUE).fillColor(0x5500ff00)
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
         //setting the camera with the specified location and animate in map
@@ -183,5 +249,213 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback {
         listPoly.add(polygon);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        //menu.findItem(R.id.action_search);
+
+        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+        View actionView = myActionMenuItem.getActionView();
+        //AutoCompleteTextView searchView = (AutoCompleteTextView) actionView.findViewById(R.id.action_search);
+        final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+        searchView.setSuggestionsAdapter(mAdapter);
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                Log.d("SHAKIL", "select position = "+position );
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                if(marker != null)
+                    marker.remove();
+                //Log.d("SHAKIL", "click position = "+c.getString(position) );
+                Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
+                String feedName = cursor.getString(1);
+                String lati = cursor.getString(2);
+                String loti = cursor.getString(3);
+                String bankName = cursor.getString(4);
+                LatLng location = new LatLng(Double.parseDouble(lati), Double.parseDouble(loti));
+                //adding a marker
+                MarkerOptions myOffice = new MarkerOptions().position(location).title(bankName)
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+                marker = mMap.addMarker(myOffice);
+                searchView.setQuery(feedName, false);
+                searchView.clearFocus();
+                CameraPosition target = CameraPosition.builder().target(location).zoom(14).build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 2000, null);
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                    Log.d("SHAKIL", "text being changed");
+                   filterData(newText);
+                return true;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void filterInit() {
+        c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
+        for (int i=0; i<SUGGESTIONS.length; i++) {
+            //if (SUGGESTIONS[i].toLowerCase().startsWith(query.toLowerCase()))
+                c.addRow(new Object[] {i, SUGGESTIONS[i]});
+            Log.d("SHAKIL", "yap filteringadded " + SUGGESTIONS[i]);
+        }
+        mAdapter.changeCursor(c);
+    }
+    private void initCursor(){
+        c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
+        for (int i=0; i<SUGGESTIONS.length; i++) {
+            //if (SUGGESTIONS[i].toLowerCase().startsWith(query.toLowerCase()))
+            c.addRow(new Object[] {i, SUGGESTIONS[i]});
+            //Log.d("SHAKIL", "yap filteringadded " + SUGGESTIONS[i]);
+        }
+    }
+    private void filter(String query){
+        c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
+        for (int i=0; i<SUGGESTIONS.length; i++) {
+            if (SUGGESTIONS[i].toLowerCase().startsWith(query.toLowerCase()))
+                c.addRow(new Object[] {i, SUGGESTIONS[i]});
+            Log.d("SHAKIL", "yap filtering");
+        }
+        mAdapter.changeCursor(c);
+    }
+    private void filterData(String query){
+        int i=0;
+        c = new MatrixCursor(new String[]{ BaseColumns._ID, "address", "lat", "longi", "bank"});
+        if (cursor.moveToFirst()) {
+            do{
+                String addrs = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
+                String lat = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
+                String longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
+                String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                //Log.d("SHAKIL", "address="+addrs);
+                if(addrs.toLowerCase().contains(query.toLowerCase()) || addrs.toLowerCase().contains(query)){
+                    c.addRow(new Object[] {i, addrs, lat, longi, bankName});
+                    //Log.d("SHAKIL", "total similar matches="+i);
+                }
+                i++;
+            } while (cursor.moveToNext());
+        }
+        //Log.d("SHAKIL", "total similar found="+c.getCount());
+        mAdapter.changeCursor(c);
+    }
+
+    /*
+     loader to load cursor which will provide the data for searchview as it needs a cursoradapter for suggestionAdapter
+     so a cursor containing all atms data should be provided
+     */
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d("SHAKIL", "4m onCreateLoader");
+        String URL = "content://com.atmlocator.Bank/atms";
+        Uri atmsUri = Uri.parse(URL);
+        return new android.support.v4.content.CursorLoader(this, atmsUri, null, null, null, "bank");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Toast.makeText(getApplicationContext(), "cursor row no : "+data.getCount(), Toast.LENGTH_SHORT).show();
+        if(data.getCount() <1)
+            new DataAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        else
+            cursor = data;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    /*
+    this will execute to load the data from server to the sqlite databse if cursor.getCount=0 means
+    no data is in the sqlite table atms
+     */
+
+    private class DataAsync extends AsyncTask<Void, Void, String> {
+        String result = null;
+        JSONObject jsonObject;
+        JSONArray jsonArray;
+        //but what the hack is going
+        // but also for the last unknown situation
+        @Override
+        protected String doInBackground(Void... params) {
+            String url = ApiSearch.SEARCHVIEW_API;
+            result = new HttpDataHandler().GetHTTPData(url);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            String bank = null, atm_name = null, lat = null, longi = null, address = null
+                    , city = null, state = null, country = null;
+            String grade = null;
+            //Log.d("SHAKIL", "yap students data = "+ result + "\n now time is=" + DateFormat.getDateTimeInstance().format(new Date()));
+            //stringBuffer.append(DateFormat.getDateTimeInstance().format(new Date())  + "\n");
+            if(result != null) {
+                try {
+                    jsonArray = new JSONArray(result);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        bank = jsonArray.getJSONObject(i).getString("Bank");
+                        atm_name = jsonArray.getJSONObject(i).getString("Atm_Name");
+                        lat = jsonArray.getJSONObject(i).getString("Lat");
+                        longi = jsonArray.getJSONObject(i).getString("Longi");
+                        address = jsonArray.getJSONObject(i).getString("Address");
+                        city = jsonArray.getJSONObject(i).getString("City");
+                        state = jsonArray.getJSONObject(i).getString("State");
+                        country = jsonArray.getJSONObject(i).getString("Country");
+                        ContentValues values = new ContentValues();
+
+                        values.put(AtmProvider.BANK, bank);
+                        values.put(AtmProvider.ATM_NAME, atm_name);
+                        values.put(AtmProvider.LAT, lat);
+                        values.put(AtmProvider.LONGI, longi);
+                        values.put(AtmProvider.ADDRESS, address);
+                        values.put(AtmProvider.CITY, city);
+                        values.put(AtmProvider.STATE, state);
+                        values.put(AtmProvider.COUNTRY, country);
+
+
+                        Uri uri = getContentResolver().insert(
+                                AtmProvider.CONTENT_URI, values);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                restartLoader();
+            }else{
+                Toast.makeText(getApplicationContext(), "Check your net connection Please", Toast.LENGTH_LONG).show();
+            }
+            super.onPostExecute(result);
+        }
+    }
+    private void restartLoader() {
+        Log.d("SHAKIL", "yap restarting the loader after getting data from server");
+        getSupportLoaderManager().restartLoader(1, null, this);
+    }
+    private void resetDb(View v){
+        getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
+    }
 }
 
