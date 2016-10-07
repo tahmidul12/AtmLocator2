@@ -105,7 +105,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     Button button;
     Marker marker;
     private LatLng clickedMarkerLatlng;
-    Animation show_dirButton_anim, hide_diButton_anim;
+    Animation show_dirButton_anim, hide_diButton_anim, dirButton_rotate;
+    private boolean showAnim = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,6 +224,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         //init variables
         show_dirButton_anim = AnimationUtils.loadAnimation(getApplication(), R.anim.dir_button_show);
         hide_diButton_anim = AnimationUtils.loadAnimation(getApplication(), R.anim.dir_button_hide);
+        dirButton_rotate = AnimationUtils.loadAnimation(getApplication(), R.anim.dir_button_rotate);
         listPoly = new ArrayList<Polygon>();
         listMarker = new ArrayList<Marker>();
         listPolyline = new ArrayList<Polyline>();
@@ -535,11 +537,17 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                }
            }
            imButtonDir.setVisibility(View.VISIBLE);
-           RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
-           layoutParams.rightMargin += (int) (imButtonDir.getWidth() * 1.7);
-           layoutParams.bottomMargin += (int) (imButtonDir.getHeight() * 0.25);
-           imButtonDir.setLayoutParams(layoutParams);
-           imButtonDir.startAnimation(show_dirButton_anim);
+           if(!imButtonDir.isClickable())
+               imButtonDir.setClickable(true);
+           if(!showAnim){
+               RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
+               layoutParams.rightMargin += (int) (imButtonDir.getWidth() * 0.8);
+               imButtonDir.setLayoutParams(layoutParams);
+               imButtonDir.startAnimation(show_dirButton_anim);
+               showAnim = true;
+           }else{
+               imButtonDir.startAnimation(dirButton_rotate);
+           }
            clickedMarkerLatlng = marker.getPosition();
            return false;
        }
@@ -561,12 +569,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 downloadTask.execute(url);
 
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
-                layoutParams.rightMargin -= (int) (imButtonDir.getWidth() * 1.7);
-                layoutParams.bottomMargin -= (int) (imButtonDir.getHeight() * 0.25);
+                layoutParams.rightMargin -= (int) (imButtonDir.getWidth() * 0.8);
                 imButtonDir.setLayoutParams(layoutParams);
                 imButtonDir.startAnimation(hide_diButton_anim);
-
-                imButtonDir.setVisibility(View.GONE);
+                imButtonDir.setClickable(false);
+                showAnim = false;
+                if(imButtonDir.getVisibility() == View.VISIBLE)
+                     imButtonDir.setVisibility(View.INVISIBLE);
             }
 
         }

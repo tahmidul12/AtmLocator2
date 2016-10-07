@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/map"
             android:src="@drawable/bubble_mask"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
     <SeekBar
