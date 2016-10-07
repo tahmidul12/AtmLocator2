@@ -19,9 +19,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -42,6 +46,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.SphericalUtil;
 
@@ -49,13 +55,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import apiconstant.ApiSearch;
 import apiconstant.Constant;
+
+import static com.atm.atmlocator.R.id.imButtonDir;
+import static com.atm.atmlocator.R.id.map;
 
 /*
    using google map we have to implement the OnMapReadyCallback so when the map will be ready then we can add necessary attribute
@@ -70,6 +86,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private Circle circle;
     private List<Polygon> listPoly;
     private List<Marker> listMarker;
+    private List<Polyline> listPolyline;
+    private ImageButton imButtonDir;
 
     // for search menu on toolbar
     private ArrayList<String> stringArrayList;
@@ -86,12 +104,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     public Cursor cursor;
     Button button;
     Marker marker;
+    private LatLng clickedMarkerLatlng;
+    Animation show_dirButton_anim, hide_diButton_anim;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
 
         //initialize layout components
@@ -102,6 +123,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
             }
         });
+        imButtonDir = (ImageButton) findViewById(R.id.imButtonDir);
+        imButtonDir.setOnClickListener(new ButtonClickListener());
         textv_seekOnline = (TextView) findViewById(R.id.textv_seekOnline);
         seekBarOnline = (SeekBar) findViewById(R.id.seekBarOnline);
         if (seekBarOnline != null) {
@@ -198,8 +221,11 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             });
         }
         //init variables
+        show_dirButton_anim = AnimationUtils.loadAnimation(getApplication(), R.anim.dir_button_show);
+        hide_diButton_anim = AnimationUtils.loadAnimation(getApplication(), R.anim.dir_button_hide);
         listPoly = new ArrayList<Polygon>();
         listMarker = new ArrayList<Marker>();
+        listPolyline = new ArrayList<Polyline>();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
 
         //
@@ -227,6 +253,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 .strokeColor(Color.BLUE).fillColor(0x5500ff00)
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
+
+        // adding marker click listener in googleMap
+        mMap.setOnMarkerClickListener(new MarkerClickListener());
         //setting the camera with the specified location and animate in map
         CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 3000, null);
@@ -493,6 +522,205 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         if(dis <= rad)
             return true;
         return false;
+    }
+
+   private class MarkerClickListener implements GoogleMap.OnMarkerClickListener {
+
+       @Override
+       public boolean onMarkerClick(Marker marker) {
+           if(listPolyline.size() > 0) {
+               for (Polyline polyline : listPolyline){
+                         polyline.remove();
+                         Log.d("SHAKIL", "polyline removed no:"+polyline.getId());
+               }
+           }
+           imButtonDir.setVisibility(View.VISIBLE);
+           RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
+           layoutParams.rightMargin += (int) (imButtonDir.getWidth() * 1.7);
+           layoutParams.bottomMargin += (int) (imButtonDir.getHeight() * 0.25);
+           imButtonDir.setLayoutParams(layoutParams);
+           imButtonDir.startAnimation(show_dirButton_anim);
+           clickedMarkerLatlng = marker.getPosition();
+           return false;
+       }
+   }
+
+    private class ButtonClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+
+            if(v.getId() == R.id.imButtonDir){
+                LatLng origin = circle.getCenter();
+                LatLng dest = clickedMarkerLatlng;
+
+                String url = getDirectionsUrl(origin, dest);
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                downloadTask.execute(url);
+
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
+                layoutParams.rightMargin -= (int) (imButtonDir.getWidth() * 1.7);
+                layoutParams.bottomMargin -= (int) (imButtonDir.getHeight() * 0.25);
+                imButtonDir.setLayoutParams(layoutParams);
+                imButtonDir.startAnimation(hide_diButton_anim);
+
+                imButtonDir.setVisibility(View.GONE);
+            }
+
+        }
+    }
+
+    // added all for directions
+    private String getDirectionsUrl(LatLng origin,LatLng dest){
+
+        // Origin of route
+        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+
+        // Output format
+        String output = "json";
+
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+
+        return url;
+    }
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try{
+            URL url = new URL(strUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Connecting to url
+            urlConnection.connect();
+
+            // Reading data from url
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb  = new StringBuffer();
+
+            String line = "";
+            while( ( line = br.readLine())  != null){
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        }catch(Exception e){
+            Log.d("SHAKIL", e.toString());
+        }finally{
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+    // Fetches data from url passed
+    private class DownloadTask extends AsyncTask<String, Void, String>{
+
+        // Downloading data in non-ui thread
+        @Override
+        protected String doInBackground(String... url) {
+
+            // For storing data from web service
+            String data = "";
+
+            try{
+                // Fetching the data from web service
+                data = downloadUrl(url[0]);
+            }catch(Exception e){
+                Log.d("Background Task",e.toString());
+            }
+            return data;
+        }
+
+        // Executes in UI thread, after the execution of
+        // doInBackground()
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+
+            // Invokes the thread for parsing the JSON data
+            parserTask.execute(result);
+        }
+    }
+
+
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>>> {
+
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try{
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                // Starts parsing data
+                routes = parser.parse(jObject);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList<LatLng> points = null;
+            PolylineOptions lineOptions = null;
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            // Traversing through all the routes
+            for(int i=0;i<result.size();i++){
+                points = new ArrayList<LatLng>();
+                lineOptions = new PolylineOptions();
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+
+                // Fetching all the points in i-th route
+                for(int j=0;j<path.size();j++){
+                    HashMap<String,String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(2);
+                lineOptions.color(Color.RED);
+            }
+
+            // Drawing polyline in the Google Map for the i-th route
+            Polyline polyline = mMap.addPolyline(lineOptions);
+            listPolyline.add(polyline);
+            Log.d("SHAKIL", "added polyline to list");
+        }
     }
 }
 
