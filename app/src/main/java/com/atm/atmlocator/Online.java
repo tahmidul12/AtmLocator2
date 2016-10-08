@@ -572,7 +572,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                imButtonDir.setClickable(true);
            if(!showAnim){
                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
-               layoutParams.rightMargin += (int) (imButtonDir.getWidth() * 0.8);
+               layoutParams.rightMargin += (int) (imButtonDir.getWidth() * 1.17);
                imButtonDir.setLayoutParams(layoutParams);
                imButtonDir.startAnimation(show_dirButton_anim);
                showAnim = true;
@@ -600,7 +600,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 downloadTask.execute(url);
 
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) imButtonDir.getLayoutParams();
-                layoutParams.rightMargin -= (int) (imButtonDir.getWidth() * 0.8);
+                layoutParams.rightMargin -= (int) (imButtonDir.getWidth() * 1.17);
                 imButtonDir.setLayoutParams(layoutParams);
                 imButtonDir.startAnimation(hide_diButton_anim);
                 imButtonDir.setClickable(false);

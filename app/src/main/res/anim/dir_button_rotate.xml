@@ -3,7 +3,7 @@
     android:fillAfter="true"
     android:shareInterpolator="false">
 
-    <!-- Rotate -->
+    <!-- Rotate
     <rotate
         android:duration="600"
         android:fromDegrees="30"
@@ -13,7 +13,14 @@
         android:repeatCount="4"
         android:repeatMode="reverse"
         android:toDegrees="0"></rotate>
-
+-->
+    <translate
+        android:duration="1000"
+        android:fromXDelta="25%"
+        android:fromYDelta="0%"
+        android:interpolator="@android:anim/overshoot_interpolator"
+        android:toXDelta="0%"
+        android:toYDelta="0%"></translate>
     <alpha
         android:duration="500"
         android:fromAlpha="0.0"
