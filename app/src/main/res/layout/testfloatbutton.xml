@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:map = "http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="5dp"
+        >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="We Are Tigers"
+            android:textSize="19sp"
+            android:textColor="@color/common_google_signin_btn_text_light"/>
+    </android.support.v7.widget.Toolbar>
+</android.support.design.widget.AppBarLayout>
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/viewA"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="10"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:visibility="gone"
+                android:background="@android:drawable/dialog_holo_light_frame"
+                android:text="@string/app_name"/>
+            <RelativeLayout
+                android:id="@+id/relateV"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="@android:drawable/dialog_holo_light_frame"
+                android:layout_weight="9.5">
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:id="@+id/map"
+                    />
+                <ImageButton
+                    android:id="@+id/imButtonDir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/map"
+                    android:src="@drawable/bubble_mask"
+                    android:visibility="invisible"
+                    android:layout_marginRight="-59dp"
+                    android:layout_marginBottom="44dp"
+                    android:layout_alignParentRight="true"/>
+                <SeekBar
+                    android:id="@+id/seekBarOnline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/map"
+                    android:alpha="0.5"
+                    android:background="@android:drawable/dialog_holo_light_frame"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0dp"/>
+            </RelativeLayout>
+<!--
+            <TextView
+
+                android:id="@+id/textv_seekOnline"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="seekbar progress value"
+                />
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:visibility="visible"
+                android:text="offline"
+                />
+-->
+        </LinearLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="352dp"
+        android:layout_marginBottom="0dp"
+        android:layout_gravity="left"
+        android:layout_above="@+id/map"
+        android:clickable="true"
+        android:src="@mipmap/marker"
+        app:fabSize="mini"
+        />
+
+</android.support.design.widget.CoordinatorLayout>

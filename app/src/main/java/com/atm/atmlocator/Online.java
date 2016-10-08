@@ -1,19 +1,23 @@
 package com.atm.atmlocator;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -89,7 +93,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private List<Marker> listMarker;
     private List<Polyline> listPolyline;
     private ImageButton imButtonDir;
-
+    private FloatingActionButton myFabOnline;
     // for search menu on toolbar
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> adapter;
@@ -112,7 +116,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_online);
+        setContentView(R.layout.activity_onlines);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setLogo(R.mipmap.marker);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation((float)5);
+        }
+        //getSupportActionBar().setElevation(4);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(map);
         View mapView = mapFragment.getView();
@@ -120,13 +132,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         mapFragment.getMapAsync(this);
 
         //initialize layout components
-        button = (Button) findViewById(R.id.button1);
+        /*button = (Button) findViewById(R.id.button1);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
             }
-        });
+        });*/
+        myFabOnline = (FloatingActionButton) findViewById(R.id.myFabOnline);
+        myFabOnline.setOnClickListener(new ButtonClickListener());
         imButtonDir = (ImageButton) findViewById(R.id.imButtonDir);
         imButtonDir.setOnClickListener(new ButtonClickListener());
         textv_seekOnline = (TextView) findViewById(R.id.textv_seekOnline);
@@ -608,6 +622,10 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 showAnim = false;
                 if(imButtonDir.getVisibility() == View.VISIBLE)
                      imButtonDir.setVisibility(View.INVISIBLE);
+            }
+            else if(v.getId() == R.id.myFabOnline){
+                Intent intent = new Intent(Online.this, Offline.class);
+                startActivity(intent);
             }
 
         }
