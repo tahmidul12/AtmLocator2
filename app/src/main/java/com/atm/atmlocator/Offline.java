@@ -1,6 +1,7 @@
 package com.atm.atmlocator;
 
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -48,6 +49,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         //init vars
         listOfBank = (ListView) findViewById(R.id.listv_bank);
+        listOfBank.setDivider(new ColorDrawable(getResources().getColor(R.color.dividerColor)));
+        listOfBank.setDividerHeight(12);
         if(listBank == null || listBank.size() ==0)
             listBank = new ArrayList<BankModel>();
         adapter = new ArrayAdapterBank(this, listBank);

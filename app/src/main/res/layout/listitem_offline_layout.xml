@@ -12,7 +12,7 @@
         android:background="@drawable/map_back">
     <LinearLayout
         android:layout_width="match_parent"
-        android:padding="9dp"
+        android:padding="6dp"
         android:layout_height="110dp">
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,13 +21,18 @@
             android:gravity="center">
             <TextView
                 android:id="@+id/txtv_atmName"
-                android:paddingBottom="5dp"
+                android:paddingBottom="1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:gravity="left"
                 android:text="BSL Div U-18"
                 android:textSize="18sp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/listitemdivider"
+                />
             <TextView
                 android:id="@+id/txtv_bankName"
                 android:layout_width="match_parent"
