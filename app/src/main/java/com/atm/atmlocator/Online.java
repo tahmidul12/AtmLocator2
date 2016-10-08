@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -114,6 +115,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         setContentView(R.layout.activity_online);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(map);
+        View mapView = mapFragment.getView();
+        mapView.setOnTouchListener(new MapTouchListener());
         mapFragment.getMapAsync(this);
 
         //initialize layout components
@@ -155,7 +158,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         circle.setRadius(radOfCir);
                         //now adjust zoom to keep circle inside map and animate
                         bound = toBounds(circle.getCenter(), radOfCir);
-                        cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
+                        mMap.setPadding(10, 10, 10, 30);
+                        cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
                         for(Polygon poly : listPoly) {
                             //poly.remove();
                             //Log.d("SHAKIL", "removed no:");
@@ -187,7 +191,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         circle.setRadius(radOfCir);
                         //now adjust zoom to keep circle inside map and animate
                         bound = toBounds(circle.getCenter(), radOfCir);
-                        cu = CameraUpdateFactory.newLatLngBounds(bound, 10);
+                        mMap.setPadding(10, 10, 10, 30);
+                        cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
                         for(Polygon poly : listPoly) {
                             //poly.remove();
                             //Log.d("SHAKIL", "removed no:");
@@ -212,11 +217,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     //Log.d("SHAKIL", "on start tracking touch");
+                    seekBar.setAlpha(1);
                     inprogress = seekBar.getProgress();
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    seekBar.setAlpha((float) 0.5);
                     //Log.d("SHAKIL", "on stop tracking touch");
                 }
             });
@@ -255,7 +262,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 .strokeColor(Color.BLUE).fillColor(0x5500ff00)
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
-
+        mMap.setOnCameraChangeListener(new CamerachangeListener());
         // adding marker click listener in googleMap
         mMap.setOnMarkerClickListener(new MarkerClickListener());
         //setting the camera with the specified location and animate in map
@@ -420,6 +427,30 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 marker.remove();
         }
     }
+
+    private class CamerachangeListener implements GoogleMap.OnCameraChangeListener{
+
+        @Override
+        public void onCameraChange(CameraPosition cameraPosition) {
+            Log.d("SHAKIL", "camera pos changed");
+        }
+    }
+    private class MapTouchListener implements View.OnTouchListener{
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch(motionEvent.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    Log.d("SHAKIL", "map touched started//////////");
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.d("SHAKIL", "map touched stopped..........");
+                    break;
+            }
+            return false;
+        }
+    }
+
     /*
      loader to load cursor which will provide the data for searchview as it needs a cursoradapter for suggestionAdapter
      so a cursor containing all atms data should be provided
@@ -573,12 +604,19 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 imButtonDir.setLayoutParams(layoutParams);
                 imButtonDir.startAnimation(hide_diButton_anim);
                 imButtonDir.setClickable(false);
+                //imButtonDir.setAlpha(0);
                 showAnim = false;
                 if(imButtonDir.getVisibility() == View.VISIBLE)
                      imButtonDir.setVisibility(View.INVISIBLE);
             }
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        imButtonDir.setVisibility(View.INVISIBLE);
+        super.onResume();
     }
 
     // added all for directions
@@ -701,34 +739,38 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
-            for(int i=0;i<result.size();i++){
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions();
+            if (result != null) {
+                for (int i = 0; i < result.size(); i++) {
+                    points = new ArrayList<LatLng>();
+                    lineOptions = new PolylineOptions();
 
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
+                    // Fetching i-th route
+                    List<HashMap<String, String>> path = result.get(i);
 
-                // Fetching all the points in i-th route
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
+                    // Fetching all the points in i-th route
+                    for (int j = 0; j < path.size(); j++) {
+                        HashMap<String, String> point = path.get(j);
 
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
 
-                    points.add(position);
+                        points.add(position);
+                    }
+
+                    // Adding all the points in the route to LineOptions
+                    lineOptions.addAll(points);
+                    lineOptions.width(2);
+                    lineOptions.color(Color.RED);
                 }
 
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(2);
-                lineOptions.color(Color.RED);
+                // Drawing polyline in the Google Map for the i-th route
+                Polyline polyline = mMap.addPolyline(lineOptions);
+                listPolyline.add(polyline);
+                Log.d("SHAKIL", "added polyline to list");
+            } else {
+                Toast.makeText(getApplicationContext(), "Something went wrong!!!", Toast.LENGTH_SHORT).show();
             }
-
-            // Drawing polyline in the Google Map for the i-th route
-            Polyline polyline = mMap.addPolyline(lineOptions);
-            listPolyline.add(polyline);
-            Log.d("SHAKIL", "added polyline to list");
         }
     }
 }

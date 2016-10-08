@@ -5,10 +5,10 @@
     android:id="@+id/activity_online"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/online_vertical_margin"
+    android:paddingLeft="@dimen/online_horizontal_margin"
+    android:paddingRight="@dimen/online_horizontal_margin"
+    android:paddingTop="@dimen/online_vertical_margin"
     tools:context="com.atm.atmlocator.Online">
 <LinearLayout
     android:layout_width="match_parent"
@@ -18,12 +18,15 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="0.5"
+        android:visibility="gone"
+        android:background="@android:drawable/dialog_holo_light_frame"
         android:text="@string/app_name"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_weight="5">
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:layout_weight="9.5">
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -38,20 +41,27 @@
             android:layout_alignBottom="@+id/map"
             android:src="@drawable/bubble_mask"
             android:visibility="invisible"
+            android:layout_marginRight="-36dp"
+            android:layout_marginBottom="44dp"
             android:layout_alignParentRight="true"/>
+        <SeekBar
+            android:id="@+id/seekBarOnline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/map"
+            android:alpha="0.5"
+            android:background="@android:drawable/dialog_holo_light_frame"
+            android:layout_weight="1"
+            android:layout_marginTop="0dp"/>
     </RelativeLayout>
-    <SeekBar
-        android:id="@+id/seekBarOnline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.5"
-        android:layout_marginTop="15dp"/>
+
     <TextView
 
         android:id="@+id/textv_seekOnline"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="wrap_content"
-        android:layout_weight="1.5"
+        android:layout_weight="0"
         android:text="seekbar progress value"
         />
     <Button
@@ -59,6 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:visibility="gone"
         android:text="reset db"
         />
 
