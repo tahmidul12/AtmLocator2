@@ -1,5 +1,6 @@
 package com.atm.atmlocator;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -26,7 +27,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
     public static List<BankModel> listBank;
     private ListView listOfBank;
-    private int pageNo, backpressDo = 0, listViewPos;
+    private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
     private ArrayAdapter<BankModel> adapter;
 
@@ -37,6 +38,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         setContentView(R.layout.activity_offline);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("AtmLocator");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +63,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     }
 
     @Override
+    protected void onResume() {
+        listOfBank.setSelection(listViewPos);
+        super.onResume();
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d("SHAKIL", "4m onCreateLoader");
         String URL = "content://com.atmlocator.Bank/atms";
@@ -80,16 +88,34 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     }
 
     private void addDatatoList() {
-        String bname, batmname, baddress;
+        String bname, batmname, baddress, lat, longi, state, city;
         if (cursor.moveToFirst()) {
             do{
                 bname = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
                 batmname = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                lat = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
+                longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
                 baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
+                city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
+                state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
 
-                listBank.add(new BankModel(bname, batmname, null, null, baddress, null, null, null));
+                listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
                 adapter.notifyDataSetChanged();
             } while (cursor.moveToNext());
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+
+                int playerPos = data.getIntExtra("listViewPos", 0);
+                listViewPos = playerPos;
+                //if (listOfPlayer.getFirstVisiblePosition() > playerPos || listOfPlayer.getLastVisiblePosition() < playerPos)
+                // listOfPlayer.setItemChecked(playerPos, true);
+                //listOfPlayer.smoothScrollToPosition(playerPos);
+            }
         }
     }
 }

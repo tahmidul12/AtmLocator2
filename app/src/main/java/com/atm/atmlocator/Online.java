@@ -397,6 +397,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private void filterData(String query){
         int i=0;
         c = new MatrixCursor(new String[]{ BaseColumns._ID, "address", "lat", "longi", "bank"});
+        // next line has a bug potential so handle it
         if (cursor.moveToFirst()) {
             do{
                 String addrs = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));

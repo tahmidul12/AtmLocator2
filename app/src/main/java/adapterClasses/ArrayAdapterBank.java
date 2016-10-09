@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.atm.atmlocator.Offlinedtl;
 import com.atm.atmlocator.R;
 
 import org.json.JSONArray;
@@ -70,9 +71,19 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
         }
         positionPic = position;
         final ViewHolder holder = (ViewHolder) view.getTag();
-        holder.text1.setText(Html.fromHtml(list.get(position).getBatmname()));
-        holder.text2.setText(Html.fromHtml(list.get(position).getBname()));
-        holder.text3.setText(Html.fromHtml(list.get(position).getBaddress()));
+        String bname = list.get(position).getBname();
+        String batmname = list.get(position).getBatmname();
+        String baddress = list.get(position).getBaddress();
+        String blat = list.get(position).getBlat();
+        String blongi = list.get(position).getBlongi();
+        String bcity = list.get(position).getBcity();
+        String bstate = list.get(position).getBstate();
+
+        if(batmname == null || batmname.isEmpty() || batmname.matches("null"))
+            batmname = "Atm";
+        holder.text1.setText(Html.fromHtml(batmname));
+        holder.text2.setText(Html.fromHtml(bname));
+        holder.text3.setText(Html.fromHtml(baddress));
 
         //holder.image1.setId(position);
         //holder.image1.setImageBitmap(list.get(position).getPlbitmap());
@@ -87,35 +98,48 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
                     //photoStoryD[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             new PhotoStoryPicDownloadAsync(list.get(position).getPsfeatured_media(), holder.image1, position).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }*/
-        //view.setOnClickListener(new OnItemClickListener(position, list.get(position).getPltitle(), list.get(position).getPlid()));
+        view.setOnClickListener(new OnItemClickListener(position, bname, batmname
+                , blat, blongi, baddress, bcity
+                , bstate));
         return view;
     }
-}
 
-    /*private class OnItemClickListener  implements View.OnClickListener {
+    private class OnItemClickListener  implements View.OnClickListener {
         private int mPosition;
-        private String playerName, playerId;
+        private String bname, batmname, baddress, blat, blongi, bstate, bcity;
 
 
-        OnItemClickListener(int position, String name, String playerId){
-            mPosition = position;
-            this.playerName = name;
-            this.playerId = playerId;
+        OnItemClickListener(int position, String bname, String batmname, String blat, String blongi, String baddress, String bcity
+                , String bstate){
+            this.mPosition = position;
+            this.bname = bname;
+            this.batmname = batmname;
+            this.blat = blat;
+            this.blongi = blongi;
+            this.baddress = baddress;
+            this.bcity = bcity;
+            this.bstate = bstate;
         }
 
         @Override
         public void onClick(View arg0) {
-            Intent intent = new Intent(context, PlayerDtlActivity.class);
-            intent.putExtra("picPos", mPosition);
-            intent.putExtra("playerName", playerName);
-            intent.putExtra("playerId", playerId);
-            //intent.setType("text/plain");
-            //intent.putExtra(Intent.EXTRA_TEXT, list.get(mPosition).getQlink());
-            //context.startActivity(intent);
+            Intent intent = new Intent(context, Offlinedtl.class);
+            intent.putExtra("bpos", mPosition);
+            intent.putExtra("bname", bname);
+            intent.putExtra("batmname", batmname);
+            intent.putExtra("blat", blat);
+            intent.putExtra("blongi", blongi);
+            intent.putExtra("baddress", baddress);
+            intent.putExtra("bcity", bcity);
+            intent.putExtra("bstate", bstate);
+
             context.startActivityForResult(intent, 1);
         }
     }
 
+}
+
+/*
     private class PhotoStoryPicDownloadAsync extends AsyncTask<ImageView, Void, Bitmap> {
 
         private JSONObject jobject, jobject2, jobject3;
