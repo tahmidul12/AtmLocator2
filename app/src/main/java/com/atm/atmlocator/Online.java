@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -77,6 +79,9 @@ import apiconstant.Constant;
 
 import static com.atm.atmlocator.R.id.imButtonDir;
 import static com.atm.atmlocator.R.id.map;
+import static com.atm.atmlocator.R.id.myFabOnline;
+import static com.atm.atmlocator.R.id.relateV;
+import static com.atm.atmlocator.R.id.viewA;
 
 /*
    using google map we have to implement the OnMapReadyCallback so when the map will be ready then we can add necessary attribute
@@ -93,6 +98,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private List<Marker> listMarker;
     private List<Polyline> listPolyline;
     private ImageButton imButtonDir;
+    private RelativeLayout relateV;
+    private LinearLayout lineout;
     private FloatingActionButton myFabOnline;
     // for search menu on toolbar
     private ArrayList<String> stringArrayList;
@@ -120,7 +127,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.mipmap.marker);
+        toolbar.setLogo(R.mipmap.marker9);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation((float)5);
         }
@@ -139,6 +146,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
             }
         });*/
+        lineout = (LinearLayout) findViewById(R.id.viewA);
+        relateV = (RelativeLayout) findViewById(R.id.relateV);
         myFabOnline = (FloatingActionButton) findViewById(R.id.myFabOnline);
         myFabOnline.setOnClickListener(new ButtonClickListener());
         imButtonDir = (ImageButton) findViewById(R.id.imButtonDir);
@@ -264,6 +273,18 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         getSupportLoaderManager().initLoader(1, null, this);
     }
 
+    // this is for setting the floating button properly for setting it device independently
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        int height = relateV.getMeasuredHeight();
+        CoordinatorLayout.LayoutParams floatLayoutParams = (CoordinatorLayout.LayoutParams) myFabOnline.getLayoutParams();
+        floatLayoutParams.topMargin = height - (int)(height/4);
+
+        Log.d("SHAKIL", "now top margin of ="+floatLayoutParams.topMargin+ " and relate height="+height);
+        myFabOnline.setLayoutParams(floatLayoutParams);
+        super.onWindowFocusChanged(hasFocus);
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d("SHAKIL", "yap map ready");
@@ -336,7 +357,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 LatLng location = new LatLng(Double.parseDouble(lati), Double.parseDouble(loti));
                 //adding a marker
                 MarkerOptions myOffice = new MarkerOptions().position(location).title(bankName)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.markers));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
                 marker = mMap.addMarker(myOffice);
                 searchView.setQuery(feedName, false);
                 searchView.clearFocus();
@@ -385,7 +406,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             //Log.d("SHAKIL", "yap filteringadded " + SUGGESTIONS[i]);
         }
     }
-    private void filter(String query){
+    private void filter(String query) {
         c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
         for (int i=0; i<SUGGESTIONS.length; i++) {
             if (SUGGESTIONS[i].toLowerCase().startsWith(query.toLowerCase()))
@@ -426,7 +447,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 if(isInsideCircle(from, to)){
                     //adding a marker
                     MarkerOptions myOffice = new MarkerOptions().position(to).title(bankName)
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.markers));
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
                     Marker marker1 = mMap.addMarker(myOffice);
                     listMarker.add(marker1);
                 }
