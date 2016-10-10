@@ -5,8 +5,7 @@
 
     <item android:id="@+id/action_bank"
         android:title="City Bank"
-        android:icon="@drawable/ic_cast_dark"
-        android:orderInCategory="100"
+        android:orderInCategory="0"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_search"

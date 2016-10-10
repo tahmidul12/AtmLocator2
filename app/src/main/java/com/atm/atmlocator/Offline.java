@@ -50,7 +50,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
     private Cursor cursor;
     private View bankPopUpView;
-
+    MenuItem banklists;
     private String selected_bank = "All";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +141,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
         MenuItem spinneritem = menu.findItem(R.id.spinner);
         MenuItem banklist = menu.findItem(R.id.action_bank);
+        banklists = banklist;
         bankPopUpView = banklist.getActionView();
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(spinneritem);
         ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this,
@@ -169,7 +170,16 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     selected_bank = item.getTitle().toString();
-                    setBanktoList(selected_bank);
+                    if(selected_bank.matches("All")){
+                        addDatatoList();
+                        banklists.setTitle("All");
+                    }
+
+                    else {
+                        banklists.setTitle(item.getTitle());
+                        item.setChecked(true);
+                        setBanktoList(selected_bank);
+                    }
                     /*switch (item.getItemId()){
                         case R.id.menu_alls:
                             Toast.makeText(getApplicationContext(), "yap menu all checked", Toast.LENGTH_SHORT).show();
