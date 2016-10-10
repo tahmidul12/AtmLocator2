@@ -56,7 +56,8 @@
             android:label="@string/title_activity_offline"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name=".Online" />
+        <activity android:name=".Online"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity
             android:name=".Offlinedtl"
             android:label="@string/title_activity_offlinedtl"

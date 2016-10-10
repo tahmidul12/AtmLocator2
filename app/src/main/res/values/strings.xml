@@ -4,4 +4,23 @@
     <string name="title_activity_offline">AtmLocator</string>
     <string name="API_KEY">AIzaSyBwelRv3SDaXh4oJw-tJFfpJZlV9FHnzDI</string>
     <string name="title_activity_offlinedtl">Offlinedtl</string>
+    <string name="Offline_Bank_Spinner_Prompt">Select Bank</string>
+
+    <string-array name="allBankName">
+        <item>All</item>
+        <item>DBBL</item>
+        <item>Brac Bank</item>
+        <item>AB Bank</item>
+        <item>City Bank</item>
+        <item>EBL</item>
+        <item>Exim Bank</item>
+        <item>HSBC</item>
+        <item>IFIC Bank</item>
+        <item>One Bank</item>
+        <item>Premier Bank</item>
+        <item>Prime Bank</item>
+        <item>SCB</item>
+        <item>UCBL</item>
+        <item>South-East Bank</item>
+    </string-array>
 </resources>

@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.atm.atmlocator.Home" >
+
+    <item android:id="@+id/action_settings"
+        android:title="City Bank"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:title="Search"/>
+    <item
+        android:id="@+id/spinner"
+        android:title="Select Bank"
+        app:actionViewClass="android.widget.Spinner"
+        android:background="#ffffff"
+        android:entries="@array/allBankName"
+        android:prompt="@string/Offline_Bank_Spinner_Prompt"
+        app:showAsAction="collapseActionView" />
+
+</menu>
