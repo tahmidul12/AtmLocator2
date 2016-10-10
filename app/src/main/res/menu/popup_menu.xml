@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_alls"
+        android:checkable="true"
+        android:icon="@mipmap/marker"
+        android:title="All"/>
+    <item
+        android:id="@+id/menu_dbbls"
+        android:checkable="true"
+        android:title="DBBL"/>
+
+    <item
+        android:id="@+id/menu_bracks"
+        android:checkable="true"
+        android:title="Brac Bank"/>
+
+    <item
+        android:id="@+id/menu_abs"
+        android:checkable="true"
+        android:title="AB Bank"/>
+
+    <item
+        android:id="@+id/menu_citys"
+        android:checkable="true"
+        android:title="City Bank"/>
+
+    --
+    <item
+        android:id="@+id/menu_ebls"
+        android:checkable="true"
+        android:icon="@mipmap/marker"
+        android:title="EBL"/>
+    <item
+        android:id="@+id/menu_exims"
+        android:checkable="true"
+        android:title="Exim Bank"/>
+
+    <item
+        android:id="@+id/menu_hsbcs"
+        android:checkable="true"
+        android:title="HSBC"/>
+    <item
+        android:id="@+id/menu_ifics"
+        android:checkable="true"
+        android:icon="@mipmap/marker"
+        android:title="IFIC Bank"/>
+    <item
+        android:id="@+id/menu_ones"
+        android:checkable="true"
+        android:title="One Bank"/>
+
+    <item
+        android:id="@+id/menu_premiers"
+        android:checkable="true"
+        android:title="Premier Bank"/>
+
+    <item
+        android:id="@+id/menu_primes"
+        android:checkable="true"
+        android:title="Prime Bank"/>
+    <item
+        android:id="@+id/menu_scbs"
+        android:checkable="true"
+        android:icon="@mipmap/marker"
+        android:title="SCB"/>
+    <item
+        android:id="@+id/menu_ucbls"
+        android:checkable="true"
+        android:title="UCBL"/>
+    <item
+        android:id="@+id/menu_sebls"
+        android:checkable="true"
+        android:icon="@mipmap/marker"
+        android:title="South-East Bank"/>
+</menu>

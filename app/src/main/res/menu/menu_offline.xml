@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.atm.atmlocator.Home" >
 
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/action_bank"
         android:title="City Bank"
+        android:icon="@drawable/ic_cast_dark"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"

@@ -12,6 +12,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,7 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,7 @@ import modelClasses.BankModel;
 public class Offline extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     public static List<BankModel> listBank;
+    private TextView textv_noSearch;
     private ListView listOfBank;
     private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
@@ -44,6 +49,9 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                                                  , "SCB", "UCBL", "South-East Bank"};
 
     private Cursor cursor;
+    private View bankPopUpView;
+
+    private String selected_bank = "All";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +70,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         });
 
         //init vars
+        textv_noSearch = (TextView) findViewById(R.id.textv_noSearch);
         listOfBank = (ListView) findViewById(R.id.listv_bank);
         listOfBank.setDivider(new ColorDrawable(getResources().getColor(R.color.dividerColor)));
         listOfBank.setDividerHeight(12);
@@ -104,6 +113,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     }
 
     private void addDatatoList() {
+        if(textv_noSearch.getVisibility() == View.VISIBLE)
+            textv_noSearch.setVisibility(View.GONE);
         if(listBank.size()>0)
             listBank.clear();
         String bname, batmname, baddress, lat, longi, state, city;
@@ -129,6 +140,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         getMenuInflater().inflate(R.menu.menu_offline, menu);
         MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
         MenuItem spinneritem = menu.findItem(R.id.spinner);
+        MenuItem banklist = menu.findItem(R.id.action_bank);
+        bankPopUpView = banklist.getActionView();
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(spinneritem);
         ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this,
                 R.array.allBankName, android.R.layout.simple_spinner_item);
@@ -145,6 +158,83 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.action_bank)
+        {
+            View view = findViewById(R.id.action_bank);
+            PopupMenu popup = new PopupMenu(Offline.this, view);
+            popup.getMenuInflater()
+                    .inflate(R.menu.popup_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    selected_bank = item.getTitle().toString();
+                    setBanktoList(selected_bank);
+                    /*switch (item.getItemId()){
+                        case R.id.menu_alls:
+                            Toast.makeText(getApplicationContext(), "yap menu all checked", Toast.LENGTH_SHORT).show();
+                            addDatatoList();
+                            break;
+                        case R.id.menu_dbbls:
+                            selected_bank = item.getTitle().toString();
+                            setBanktoList(selected_bank);
+                            break;
+                        case R.id.menu_bracks:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_abs:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_citys:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_ebls:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_hsbcs:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_scbs:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_primes:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_premiers:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_exims:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_ones:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_sebls:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+                        case R.id.menu_ifics:
+                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
+                            setBanktoList(item.getTitle().toString());
+                            break;
+
+                    }*/
+
+                    return false;
+                }
+            });
+            popup.show();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -190,14 +280,66 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
                 city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
                 state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
-                if(baddress.toLowerCase().contains(query.toLowerCase()) || city.toLowerCase().contains(query.toLowerCase())
-                        || state.toLowerCase().contains(query.toLowerCase()))
-                      listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                if(selected_bank.matches("All")) {
+                    if (baddress.toLowerCase().contains(query.toLowerCase()) || city.toLowerCase().contains(query.toLowerCase())
+                            || state.toLowerCase().contains(query.toLowerCase()))
+                        listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+
+                }else{
+                    if ((baddress.toLowerCase().contains(query.toLowerCase()) || city.toLowerCase().contains(query.toLowerCase())
+                            || state.toLowerCase().contains(query.toLowerCase())) && bname.matches(selected_bank))
+                        listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                }
                 adapter.notifyDataSetChanged();
             } while (cursor.moveToNext());
         }
+        if(listBank.size() == 0)
+            textv_noSearch.setVisibility(View.VISIBLE);
+        else
+            textv_noSearch.setVisibility(View.GONE);
     }
 
+    private void setBanktoList(String bankName) {
+        Log.d("SHAKIL", "listbank size = "+listBank.size());
+        if(listBank != null)
+            listBank.clear();
+        String bname, batmname, baddress, lat, longi, state, city;
+        if (cursor.moveToFirst()) {
+            do{
+                bname = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                batmname = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                lat = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
+                longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
+                baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
+                city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
+                state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
+                if(bname.equalsIgnoreCase(bankName))
+                    listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                adapter.notifyDataSetChanged();
+            } while (cursor.moveToNext());
+        }
+        /*if(listBank!= null && listBank.size()>0) {
+
+            for(int i = 0; i<listBank.size(); i++) {
+                BankModel bank = listBank.get(i);
+                Log.d("SHAKIL", "bankname = "+bank.getBname());
+                if(!bank.getBname().equalsIgnoreCase(bankName)) {
+                    listBank.remove(i);
+
+                    Log.d("SHAKIL", "matched and listBank size="+listBank.size());
+                    //adapter.remove(adapter.getItem(i));
+                    //listOfBank.setAdapter(adapter);
+                    //adapter.notifyDataSetChanged();
+                    //listOfBank.invalidateViews();
+                }
+            }
+            Log.d("SHAKIL", "after removing size of the listbank is:"+listBank.size());
+            //adapter.clear();
+            adapter = new ArrayAdapterBank(this, listBank);
+            listOfBank.setAdapter(adapter);
+            //listOfBank.invalidateViews();
+        }*/
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
