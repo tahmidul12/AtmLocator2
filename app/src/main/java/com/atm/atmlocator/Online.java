@@ -123,6 +123,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.FadeOnline);
         setContentView(R.layout.activity_onlines);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -444,7 +445,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
                 LatLng from = circle.getCenter();
                 LatLng to = new LatLng(lat, longi);
-                if(isInsideCircle(from, to)){
+                if(isInsideCircle(from, to)) {
                     //adding a marker
                     MarkerOptions myOffice = new MarkerOptions().position(to).title(bankName)
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
@@ -648,6 +649,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             else if(v.getId() == R.id.myFabOnline){
                 Intent intent = new Intent(Online.this, Offline.class);
                 startActivity(intent);
+                //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
 
         }

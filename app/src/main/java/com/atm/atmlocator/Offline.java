@@ -68,7 +68,9 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.FadeOffline);
         setContentView(R.layout.activity_offline);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("AtmLocator");
