@@ -4,7 +4,7 @@
     tools:context="com.atm.atmlocator.Home" >
 
     <item android:id="@+id/action_bank"
-        android:title="City Bank"
+        android:title="Select Bank"
         android:orderInCategory="0"
         app:showAsAction="always" />
     <item

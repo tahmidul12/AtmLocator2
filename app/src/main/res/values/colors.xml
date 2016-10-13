@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="clrs">#00FFFFFF</color>
     <color name="dividerColor">#D3D3D3</color>
+    <color name="tpWhiteColor">#D9FFFFFF</color>
 </resources>

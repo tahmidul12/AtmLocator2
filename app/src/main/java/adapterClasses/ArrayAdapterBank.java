@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.atm.atmlocator.Offlinedtl;
@@ -39,12 +40,14 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
     private static List<BankModel> list;
     private int positionPic;
     private ImageView holderImage;
+    private RelativeLayout rlmenu;
     private int i = 0;
 
     public ArrayAdapterBank(Activity context, List<BankModel> list) {
         super(context, R.layout.listitem_offline_layout, list);
         this.context = context;
         this.list = list;
+        this.rlmenu = (RelativeLayout) context.findViewById(R.id.rlmenu);
     }
 
     class ViewHolder {
@@ -123,6 +126,11 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
 
         @Override
         public void onClick(View arg0) {
+
+
+            if(rlmenu.getVisibility() == View.VISIBLE) {
+                rlmenu.setVisibility(View.GONE);
+            }else{
             Intent intent = new Intent(context, Offlinedtl.class);
             intent.putExtra("bpos", mPosition);
             intent.putExtra("bname", bname);
@@ -132,8 +140,8 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
             intent.putExtra("baddress", baddress);
             intent.putExtra("bcity", bcity);
             intent.putExtra("bstate", bstate);
-
             context.startActivityForResult(intent, 1);
+            }
         }
     }
 

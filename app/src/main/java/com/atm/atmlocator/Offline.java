@@ -2,6 +2,7 @@ package com.atm.atmlocator;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,10 +19,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +44,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     public static List<BankModel> listBank;
     private TextView textv_noSearch;
     private ListView listOfBank;
+    private RelativeLayout rlmenu;
+    private RadioButton rb_dbbl, rb_brac, rb_exim, rb_ific;
     private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
     private ArrayAdapter<BankModel> adapter;
@@ -52,6 +59,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     private View bankPopUpView;
     MenuItem banklists;
     private String selected_bank = "All";
+    private boolean checked = false;
+    /*
+    experimental
+     */
+    Rect rlmenu_rect;
+    private RelativeLayout content_offline;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +83,19 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         });
 
         //init vars
+        rlmenu_rect = new Rect();
+        rb_brac = (RadioButton) findViewById(R.id.rb_brac);
+        rb_dbbl = (RadioButton) findViewById(R.id.rb_dbbl);
+        rb_ific = (RadioButton) findViewById(R.id.rb_ific);
+        rb_exim = (RadioButton) findViewById(R.id.rb_exim);
+
+        rb_brac.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_brac.setOnClickListener(new RadioButtonClickListener());
+
+        //experimental
+        content_offline = (RelativeLayout) findViewById(R.id.content_offline);
+        content_offline.setOnTouchListener(new RlTouchListener());
+        rlmenu = (RelativeLayout) findViewById(R.id.rlmenu);
         textv_noSearch = (TextView) findViewById(R.id.textv_noSearch);
         listOfBank = (ListView) findViewById(R.id.listv_bank);
         listOfBank.setDivider(new ColorDrawable(getResources().getColor(R.color.dividerColor)));
@@ -91,6 +117,27 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     protected void onResume() {
         listOfBank.setSelection(listViewPos);
         super.onResume();
+    }
+
+    /*
+    experimental added for touch event hasWindowFocus
+     */
+    private class RlTouchListener implements View.OnTouchListener{
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if(view.getId() == R.id.rlmenu)
+                Log.d("SHAKIL", "yap rlmenu clicked");
+            if(rlmenu_rect != null) {
+                if (rlmenu_rect.contains((int) motionEvent.getRawX(), (int) motionEvent.getRawY())){
+                }
+                else {
+                    if(rlmenu.getVisibility() == View.VISIBLE)
+                        rlmenu.setVisibility(View.GONE);
+                }
+            }
+            return false;
+        }
     }
 
     @Override
@@ -162,6 +209,13 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         if(item.getItemId() == R.id.action_bank)
         {
+            if(rlmenu.getVisibility() == View.VISIBLE) {
+                rlmenu.setVisibility(View.GONE);
+                //if(rlmenu_rect != null)
+                     rlmenu.getGlobalVisibleRect(rlmenu_rect);
+            }else{
+                rlmenu.setVisibility(View.VISIBLE);
+            }
             View view = findViewById(R.id.action_bank);
             PopupMenu popup = new PopupMenu(Offline.this, view);
             popup.getMenuInflater()
@@ -170,7 +224,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     selected_bank = item.getTitle().toString();
-                    if(selected_bank.matches("All")){
+                    if(selected_bank.matches("All")) {
                         addDatatoList();
                         banklists.setTitle("All");
                     }
@@ -180,75 +234,39 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                         item.setChecked(true);
                         setBanktoList(selected_bank);
                     }
-                    /*switch (item.getItemId()){
-                        case R.id.menu_alls:
-                            Toast.makeText(getApplicationContext(), "yap menu all checked", Toast.LENGTH_SHORT).show();
-                            addDatatoList();
-                            break;
-                        case R.id.menu_dbbls:
-                            selected_bank = item.getTitle().toString();
-                            setBanktoList(selected_bank);
-                            break;
-                        case R.id.menu_bracks:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_abs:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_citys:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_ebls:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_hsbcs:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_scbs:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_primes:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_premiers:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_exims:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_ones:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_sebls:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-                        case R.id.menu_ifics:
-                            Toast.makeText(getApplicationContext(), "yap brac", Toast.LENGTH_SHORT).show();
-                            setBanktoList(item.getTitle().toString());
-                            break;
-
-                    }*/
-
                     return false;
                 }
             });
-            popup.show();
+            //popup.show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private class RadioButtonCheckListener implements RadioButton.OnCheckedChangeListener{
+
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if(compoundButton.getId() == R.id.rb_brac){
+                checked = b;
+                rb_brac.setChecked(b);
+                Log.d("SHAKIL", "yap brack is checked to " + b);
+            }
+        }
+
+
+    }
+    private class RadioButtonClickListener implements RadioButton.OnClickListener{
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == R.id.rb_brac) {
+                if(checked){}
+                    //rb_brac.setChecked(false);
+                else{}
+                    //rb_brac.setChecked(true);
+            }
+        }
+    }
     private class SearchViewListener implements SearchView.OnQueryTextListener{
 
         @Override
@@ -350,17 +368,15 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
             //listOfBank.invalidateViews();
         }*/
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK){
-
+            if(resultCode == RESULT_OK) {
                 int playerPos = data.getIntExtra("listViewPos", 0);
                 listViewPos = playerPos;
-                //if (listOfPlayer.getFirstVisiblePosition() > playerPos || listOfPlayer.getLastVisiblePosition() < playerPos)
-                // listOfPlayer.setItemChecked(playerPos, true);
-                //listOfPlayer.smoothScrollToPosition(playerPos);
             }
         }
     }

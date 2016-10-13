@@ -8,7 +8,7 @@
     android:paddingBottom="0dp"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingTop="0dp"
     android:background="#D3D3D3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.atm.atmlocator.Offline"
@@ -17,7 +17,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="16dp">
         <TextView
             android:id="@+id/textv_noSearch"
             android:layout_width="match_parent"
@@ -34,5 +35,38 @@
 
         </ListView>
     </LinearLayout>
-
+    <RelativeLayout
+        android:id="@+id/rlmenu"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:layout_alignParentRight="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tpWhiteColor"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/rb_dbbl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DBBL"/>
+            <RadioButton
+                android:id="@+id/rb_brac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Brac Bank"/>
+            <RadioButton
+                android:id="@+id/rb_ific"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="IFIC Bank"/>
+            <RadioButton
+                android:id="@+id/rb_exim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exim Bank"/>
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
