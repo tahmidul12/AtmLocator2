@@ -352,10 +352,12 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     public void onWindowFocusChanged(boolean hasFocus) {
         int height = relateV.getMeasuredHeight();
         CoordinatorLayout.LayoutParams floatLayoutParams = (CoordinatorLayout.LayoutParams) myFabOnline.getLayoutParams();
+        CoordinatorLayout.LayoutParams floatLayoutParams2 = (CoordinatorLayout.LayoutParams) myFabCurrentLoc.getLayoutParams();
         floatLayoutParams.topMargin = height - (int)(height/4);
-
-        Log.d("SHAKIL", "now top margin of ="+floatLayoutParams.topMargin+ " and relate height="+height);
+        floatLayoutParams2.topMargin = height - (int)(height/4);
+        //Log.d("SHAKIL", "now top margin of ="+floatLayoutParams.topMargin+ " and relate height="+height);
         myFabOnline.setLayoutParams(floatLayoutParams);
+        myFabCurrentLoc.setLayoutParams(floatLayoutParams2);
         super.onWindowFocusChanged(hasFocus);
     }
 
