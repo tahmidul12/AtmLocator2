@@ -3,16 +3,21 @@ package com.atm.atmlocator;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -40,6 +45,11 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -89,7 +99,9 @@ import static com.atm.atmlocator.R.id.viewA;
    using google map we have to implement the OnMapReadyCallback so when the map will be ready then we can add necessary attribute
    ex: circle, marker to the map
  */
-public class Online extends AppCompatActivity implements OnMapReadyCallback , LoaderManager.LoaderCallbacks<Cursor>{
+public class Online extends AppCompatActivity implements OnMapReadyCallback , LoaderManager.LoaderCallbacks<Cursor>
+        , GoogleApiClient.ConnectionCallbacks
+        , GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     GoogleMap mMap;
     private boolean mapReady = false;
@@ -102,7 +114,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private ImageButton imButtonDir;
     private RelativeLayout relateV;
     private LinearLayout lineout;
-    private FloatingActionButton myFabOnline;
+    private FloatingActionButton myFabOnline, myFabCurrentLoc;
     // for search menu on toolbar
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> adapter;
@@ -130,6 +142,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private Button infoButton;
     private OnInfoWindowElemTouchListener infoButtonListener;
     MapWrapperLayout mapWrapperLayout;
+    //for user location
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private double lat, lng;
+    private LatLng userLatLng;
+    private boolean apiConnected;
+    private boolean uLocDetected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +199,16 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             }
         };
         this.infoButton.setOnTouchListener(infoButtonListener);
+
+        //init variables for detecting user location
+        uLocDetected = false;
+        apiConnected = false;
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks( this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mLocationRequest = LocationRequest.create();
         /*button = (Button) findViewById(R.id.button1);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,7 +219,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         lineout = (LinearLayout) findViewById(R.id.viewA);
         relateV = (RelativeLayout) findViewById(R.id.relateV);
         myFabOnline = (FloatingActionButton) findViewById(R.id.myFabOnline);
+        myFabCurrentLoc = (FloatingActionButton) findViewById(R.id.myFabCurrentLoc);
         myFabOnline.setOnClickListener(new ButtonClickListener());
+        myFabCurrentLoc.setOnClickListener(new ButtonClickListener());
         imButtonDir = (ImageButton) findViewById(R.id.imButtonDir);
         imButtonDir.setOnClickListener(new ButtonClickListener());
         textv_seekOnline = (TextView) findViewById(R.id.textv_seekOnline);
@@ -572,6 +603,70 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         }
     }
 
+    //below 6 functions for handling user current location
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        apiConnected = true;
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(100000);
+        mLocationRequest.setSmallestDisplacement(20);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }else{
+//            LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(mGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(
+                        mGoogleApiClient, mLocationRequest, this);
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        apiConnected = false;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        apiConnected = false;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(location != null) {
+            Log.d("SHAKIL", "yap now location = "+location.toString());
+
+            lat = location.getLatitude();
+            lng = location.getLongitude();
+            userLatLng = new LatLng(lat, lng);
+            uLocDetected = true;
+        }
+    }
+
     private class CamerachangeListener implements GoogleMap.OnCameraChangeListener{
 
         @Override
@@ -757,11 +852,50 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 Intent intent = new Intent(Online.this, Offline.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }else if(v.getId() == R.id.myFabCurrentLoc){
+                showUserLocOnMap();
             }
 
         }
     }
 
+    // onclick of myFabCurrent loc user location will be shown on the map
+    private void showUserLocOnMap(){
+        LatLngBounds bound;
+        CameraUpdate cu;
+       if(uLocDetected && mapReady){
+           // check to remove polyline here and when searchview click happen as a new circle add we should remove polylines
+           if(circle != null)
+               circle.remove();
+           circle = mMap.addCircle(new CircleOptions().center(userLatLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
+                   .strokeWidth(3));
+           // adding a marker at the centre of the newly created circle
+           MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title("My Location")
+                   .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
+           Marker marker1 = mMap.addMarker(centreMarker);
+           // not added to the list as it will remain forever even if a new circle is added
+           //adjusting seekbar with newly created circle by setting it to 0
+           seekBarOnline.setProgress(0);
+           bound = toBounds(circle.getCenter(), circle.getRadius());
+           mMap.setPadding(10, 10, 10, 30);
+           cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
+           mMap.animateCamera(cu, 1000, new GoogleMap.CancelableCallback() {
+               @Override
+               public void onFinish() {
+                   removeMarker();
+                   //herea a conflict may arise handle it
+                   addMarker();
+               }
+
+               @Override
+               public void onCancel() {
+
+               }
+           });
+       }else{
+           Toast.makeText(getApplicationContext(), "Sorry Couldn't detect your location!!!", Toast.LENGTH_SHORT).show();
+       }
+    }
     @Override
     protected void onPause() {
         imButtonDir.setVisibility(View.INVISIBLE);
@@ -930,6 +1064,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         @Override
         public void onMapLongClick(LatLng latLng) {
             // if long click is inside circle no new circle should be made handle this
+            // check to remove polyline here and when searchview click happen as a new circle add we should remove polylines
             if(circle != null)
                 circle.remove();
             circle = mMap.addCircle(new CircleOptions().center(latLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)

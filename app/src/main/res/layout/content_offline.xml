@@ -79,6 +79,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Prime Bank"/>
+            <CheckBox
+                android:id="@+id/rb_ab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="AB Bank"/>
+            <CheckBox
+                android:id="@+id/rb_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="City Bank"/>
+
+            <CheckBox
+                android:id="@+id/rb_hsbc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="HSBC"/>
+            <CheckBox
+                android:id="@+id/rb_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="One Bank"/>
+            <CheckBox
+                android:id="@+id/rb_premier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Premier Bank"/>
+            <CheckBox
+                android:id="@+id/rb_scb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SCB"/>
+            <CheckBox
+                android:id="@+id/rb_ucbl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="UCBL"/>
+            <CheckBox
+                android:id="@+id/rb_seb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="South-East Bank"/>
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>
