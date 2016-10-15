@@ -47,18 +47,24 @@
                 android:paddingTop="0.5dp"
                 android:background="@drawable/map_back"
                 android:layout_weight="9.5">
+                <com.atm.atmlocator.MapWrapperLayout
+                    android:id="@+id/map_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight = "5">
                 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="5"
+
                     android:name="com.google.android.gms.maps.MapFragment"
                     android:id="@+id/map"
                     />
+                </com.atm.atmlocator.MapWrapperLayout>
                 <ImageButton
                     android:id="@+id/imButtonDir"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/map"
+                    android:layout_alignBottom="@+id/map_relative_layout"
                     android:src="@drawable/bubble_mask"
                     android:visibility="invisible"
                     android:layout_marginRight="-59dp"
@@ -68,7 +74,7 @@
                     android:id="@+id/seekBarOnline"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/map"
+                    android:layout_alignBottom="@+id/map_relative_layout"
                     android:alpha="0.5"
                     android:background="@android:drawable/dialog_holo_light_frame"
                     android:layout_weight="1"

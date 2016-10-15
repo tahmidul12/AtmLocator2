@@ -1,6 +1,7 @@
 package com.atm.atmlocator;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -121,6 +123,14 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     Animation show_dirButton_anim, hide_diButton_anim, dirButton_rotate;
     private boolean showAnim = false;
 
+    //added for custom infowindow
+    private ViewGroup infoWindow;
+    private TextView infoTitle;
+    private TextView infoSnippet;
+    private Button infoButton;
+    private OnInfoWindowElemTouchListener infoButtonListener;
+    MapWrapperLayout mapWrapperLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,11 +146,30 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         //getSupportActionBar().setElevation(4);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(map);
+        //added for custom infowindow
+        mapWrapperLayout = (MapWrapperLayout)findViewById(R.id.map_relative_layout);
+
         View mapView = mapFragment.getView();
         mapView.setOnTouchListener(new MapTouchListener());
         mapFragment.getMapAsync(this);
 
         //initialize layout components
+        //added for custom infowindow
+        this.infoWindow = (ViewGroup)getLayoutInflater().inflate(R.layout.info_window, null);
+        this.infoTitle = (TextView)infoWindow.findViewById(R.id.title);
+        this.infoSnippet = (TextView)infoWindow.findViewById(R.id.snippet);
+        this.infoButton = (Button)infoWindow.findViewById(R.id.button);
+        this.infoButtonListener = new OnInfoWindowElemTouchListener(infoButton,
+                getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light),
+                getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light))
+        {
+            @Override
+            protected void onClickConfirmed(View v, Marker marker) {
+                // Here we can perform some action triggered after clicking the button
+                Toast.makeText(Online.this, marker.getTitle() + "'s button clicked!", Toast.LENGTH_SHORT).show();
+            }
+        };
+        this.infoButton.setOnTouchListener(infoButtonListener);
         /*button = (Button) findViewById(R.id.button1);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,6 +334,29 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         mMap.setOnMapLongClickListener(new onMapLongClickListener());
         // adding marker click listener in googleMap
         mMap.setOnMarkerClickListener(new MarkerClickListener());
+
+        //added for custom infowindow
+        mapWrapperLayout.init(mMap, getPixelsFromDp(this, 39 + 20));
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                // Setting up the infoWindow with current's marker info
+                infoTitle.setText(marker.getTitle());
+                infoSnippet.setText(marker.getSnippet());
+                infoButtonListener.setMarker(marker);
+
+                // We must call this to set the current marker and infoWindow references
+                // to the MapWrapperLayout
+                mapWrapperLayout.setMarkerWithInfoWindow(marker, infoWindow);
+                return infoWindow;
+            }
+        });
+        //added finshed for custom infowindow
         //setting the camera with the specified location and animate in map
         CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 3000, null);
@@ -896,6 +948,10 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             //circle.setClickable(true);
 
         }
+    }
+    public static int getPixelsFromDp(Context context, float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int)(dp * scale + 0.5f);
     }
 }
 
