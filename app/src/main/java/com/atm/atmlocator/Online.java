@@ -166,7 +166,17 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             @Override
             protected void onClickConfirmed(View v, Marker marker) {
                 // Here we can perform some action triggered after clicking the button
-                Toast.makeText(Online.this, marker.getTitle() + "'s button clicked!", Toast.LENGTH_SHORT).show();
+                //giving direction on Click this dir button
+                LatLng origin = circle.getCenter();
+                LatLng dest = marker.getPosition();
+
+                String url = getDirectionsUrl(origin, dest);
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                downloadTask.execute(url);
+
+                Toast.makeText(Online.this, marker.getTitle() + "direction coming....", Toast.LENGTH_SHORT).show();
             }
         };
         this.infoButton.setOnTouchListener(infoButtonListener);
@@ -427,6 +437,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
                 marker = mMap.addMarker(myOffice);
                 listMarker.add(marker);
+                //adjusting seekbar with newly created circle by setting it to 0
+                seekBarOnline.setProgress(0);
                 searchView.setQuery(feedName, false);
                 searchView.clearFocus();
                 //
@@ -530,11 +542,12 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 double lat = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LAT)));
                 double longi = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI)));
                 String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                String batmNmae = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
                 LatLng from = circle.getCenter();
                 LatLng to = new LatLng(lat, longi);
                 if(isInsideCircle(from, to) && from.latitude != to.latitude && from.longitude != to.longitude) {
                     //adding a marker
-                    MarkerOptions myOffice = new MarkerOptions().position(to).title(bankName)
+                    MarkerOptions myOffice = new MarkerOptions().position(to).snippet(batmNmae).title(bankName)
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
                     Marker marker1 = mMap.addMarker(myOffice);
                     listMarker.add(marker1);
@@ -926,6 +939,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
             Marker marker1 = mMap.addMarker(centreMarker);
             listMarker.add(marker1);
+            //adjusting seekbar with newly created circle by setting it to 0
+            seekBarOnline.setProgress(0);
             Log.d("SHAKIL", "new circle latlng = "+marker1.getPosition());
 
             //now animate the camera to the newly made circle
