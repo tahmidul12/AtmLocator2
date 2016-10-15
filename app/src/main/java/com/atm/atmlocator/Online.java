@@ -250,6 +250,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     seekBar.setAlpha((float) 0.5);
                     removeMarker();
+                    //addMarker();
                     //Log.d("SHAKIL", "on stop tracking touch");
                 }
             });
@@ -350,8 +351,11 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
             @Override
             public boolean onSuggestionClick(int position) {
-                if(marker != null)
+                if(marker != null){
                     marker.remove();
+                    listMarker.remove(marker);
+                    //check if this block may create a bug or not
+                }
                 //Log.d("SHAKIL", "click position = "+c.getString(position) );
                 Cursor cursor = (Cursor) searchView.getSuggestionsAdapter().getItem(position);
                 String feedName = cursor.getString(1);
@@ -360,13 +364,41 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 String bankName = cursor.getString(4);
                 LatLng location = new LatLng(Double.parseDouble(lati), Double.parseDouble(loti));
                 //adding a marker
+                //newly added
+                if(circle != null)
+                    circle.remove();
+                circle = mMap.addCircle(new CircleOptions().center(location).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE)
+                        .fillColor(0x5500ff00)
+                        .strokeWidth(3));
+                //newly added
                 MarkerOptions myOffice = new MarkerOptions().position(location).title(bankName)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
                 marker = mMap.addMarker(myOffice);
+                listMarker.add(marker);
                 searchView.setQuery(feedName, false);
                 searchView.clearFocus();
-                CameraPosition target = CameraPosition.builder().target(location).zoom(16).build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 2000, null);
+                //
+                //     CameraPosition target = CameraPosition.builder().target(location).zoom(16).build();
+                //     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 2000, null);
+                //above two lines code are replaced by the following codes
+                LatLngBounds bound;
+                CameraUpdate cu;
+                bound = toBounds(circle.getCenter(), circle.getRadius());
+                mMap.setPadding(10, 10, 10, 30);
+                cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
+                mMap.animateCamera(cu, 1000, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        removeMarker();
+                        //herea a conflict may arise handle it
+                        addMarker();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
                 return false;
             }
         });
@@ -448,7 +480,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
                 LatLng from = circle.getCenter();
                 LatLng to = new LatLng(lat, longi);
-                if(isInsideCircle(from, to)) {
+                if(isInsideCircle(from, to) && from.latitude != to.latitude && from.longitude != to.longitude) {
                     //adding a marker
                     MarkerOptions myOffice = new MarkerOptions().position(to).title(bankName)
                             .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));

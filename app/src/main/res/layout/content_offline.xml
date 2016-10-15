@@ -47,26 +47,38 @@
             android:layout_height="wrap_content"
             android:background="@color/tpWhiteColor"
             android:orientation="vertical">
-            <RadioButton
+            <CheckBox
+                android:id="@+id/rb_all"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="All"/>
+            <CheckBox
                 android:id="@+id/rb_dbbl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="DBBL"/>
-            <RadioButton
+
+            <CheckBox
                 android:id="@+id/rb_brac"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Brac Bank"/>
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_ific"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="IFIC Bank"/>
-            <RadioButton
+            <CheckBox
                 android:id="@+id/rb_exim"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Exim Bank"/>
+            <CheckBox
+                android:id="@+id/rb_primes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Prime Bank"/>
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>
