@@ -69,12 +69,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3.0"
+            android:layout_weight="6.5"
             android:weightSum="6"
             android:orientation="vertical"
             android:layout_marginTop="0dp"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="15dp"
             android:background="@drawable/dtlmidback">
             <TextView
                 android:layout_width="match_parent"
@@ -116,7 +116,7 @@
                 android:textSize="14sp"
                 android:text="state yfor the last time"/>
         </LinearLayout>
-        <LinearLayout
+        <!--<LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/map_back"
@@ -128,6 +128,7 @@
                 android:focusable="false"
                 android:hint="comment"/>
         </LinearLayout>
+        -->
     </LinearLayout>
     </ScrollView>
 

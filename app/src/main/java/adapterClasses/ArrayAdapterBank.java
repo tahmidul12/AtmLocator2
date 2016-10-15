@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.atm.atmlocator.Offline;
 import com.atm.atmlocator.Offlinedtl;
 import com.atm.atmlocator.R;
 
@@ -41,6 +42,7 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
     private int positionPic;
     private ImageView holderImage;
     private RelativeLayout rlmenu;
+    private Offline offline;
     private int i = 0;
 
     public ArrayAdapterBank(Activity context, List<BankModel> list) {
@@ -48,6 +50,7 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
         this.context = context;
         this.list = list;
         this.rlmenu = (RelativeLayout) context.findViewById(R.id.rlmenu);
+        this.offline = new Offline();
     }
 
     class ViewHolder {
@@ -130,6 +133,7 @@ public class ArrayAdapterBank extends ArrayAdapter<BankModel> {
 
             if(rlmenu.getVisibility() == View.VISIBLE) {
                 rlmenu.setVisibility(View.GONE);
+               // offline.setBanktoListasCb();
             }else{
             Intent intent = new Intent(context, Offlinedtl.class);
             intent.putExtra("bpos", mPosition);

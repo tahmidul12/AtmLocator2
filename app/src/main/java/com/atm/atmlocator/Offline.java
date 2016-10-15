@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -42,10 +43,11 @@ import modelClasses.BankModel;
 public class Offline extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     public static List<BankModel> listBank;
+    private List<String> sbankinCb;
     private TextView textv_noSearch;
     private ListView listOfBank;
     private RelativeLayout rlmenu;
-    private RadioButton rb_dbbl, rb_brac, rb_exim, rb_ific;
+    private CheckBox rb_dbbl, rb_brac, rb_exim, rb_ific, rb_all, rb_prime;
     private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
     private ArrayAdapter<BankModel> adapter;
@@ -86,13 +88,20 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         //init vars
         rlmenu_rect = new Rect();
-        rb_brac = (RadioButton) findViewById(R.id.rb_brac);
-        rb_dbbl = (RadioButton) findViewById(R.id.rb_dbbl);
-        rb_ific = (RadioButton) findViewById(R.id.rb_ific);
-        rb_exim = (RadioButton) findViewById(R.id.rb_exim);
+        sbankinCb = new ArrayList<String>();
+        rb_all =  (CheckBox) findViewById(R.id.rb_all);
+        rb_brac = (CheckBox) findViewById(R.id.rb_brac);
+        rb_dbbl = (CheckBox) findViewById(R.id.rb_dbbl);
+        rb_prime = (CheckBox) findViewById(R.id.rb_primes);
+        rb_ific = (CheckBox) findViewById(R.id.rb_ific);
+        rb_exim = (CheckBox) findViewById(R.id.rb_exim);
 
+        rb_all.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_brac.setOnCheckedChangeListener(new RadioButtonCheckListener());
-        rb_brac.setOnClickListener(new RadioButtonClickListener());
+        rb_dbbl.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_ific.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_exim.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_prime.setOnCheckedChangeListener(new RadioButtonCheckListener());
 
         //experimental
         content_offline = (RelativeLayout) findViewById(R.id.content_offline);
@@ -134,8 +143,11 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 if (rlmenu_rect.contains((int) motionEvent.getRawX(), (int) motionEvent.getRawY())){
                 }
                 else {
-                    if(rlmenu.getVisibility() == View.VISIBLE)
+                    if(rlmenu.getVisibility() == View.VISIBLE){
                         rlmenu.setVisibility(View.GONE);
+                        setBanktoListasCb();
+                    }
+
                 }
             }
             return false;
@@ -202,9 +214,23 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         View actionView = myActionMenuItem.getActionView();
         //AutoCompleteTextView searchView = (AutoCompleteTextView) actionView.findViewById(R.id.action_search);
         final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rlmenu.getVisibility() == View.VISIBLE){
+                    rlmenu.setVisibility(View.GONE);
+                    //setBanktoListasCb();
+                }
+
+                //Log.d("SHAKIL", "yap clicked....................");
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchViewListener());
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -213,6 +239,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         {
             if(rlmenu.getVisibility() == View.VISIBLE) {
                 rlmenu.setVisibility(View.GONE);
+                //setBanktoListasCb();
                 //if(rlmenu_rect != null)
                      rlmenu.getGlobalVisibleRect(rlmenu_rect);
             }else{
@@ -234,41 +261,112 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                     else {
                         banklists.setTitle(item.getTitle());
                         item.setChecked(true);
-                        setBanktoList(selected_bank);
+                        //setBanktoList(selected_bank);
                     }
                     return false;
                 }
             });
             //popup.show();
         }
-
-        return super.onOptionsItemSelected(item);
+           return super.onOptionsItemSelected(item);
     }
+    /*private void sbClick(View v){
+        Log.d("SHAKIL", "yap search view is clicked 4m sbClick");
+    }*/
 
-    private class RadioButtonCheckListener implements RadioButton.OnCheckedChangeListener{
+    private class RadioButtonCheckListener implements CheckBox.OnCheckedChangeListener {
 
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-            if(compoundButton.getId() == R.id.rb_brac){
-                checked = b;
-                rb_brac.setChecked(b);
-                Log.d("SHAKIL", "yap brack is checked to " + b);
-            }
+           switch (compoundButton.getId()) {
+               case R.id.rb_all:
+                   if (b) {
+                       sbankinCb.clear();
+                       setrb_others();
+                       setBanktoListasCb();
+                   }
+                   else{
+                       if(sbankinCb.size() == 0)
+                           rb_all.setChecked(true);
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_all.getText());
+                   break;
+               case R.id.rb_brac:
+                   if (b) {
+                       sbankinCb.add((String) rb_brac.getText());
+                       setrb_all();
+                       if(sbankinCb.size() < 4)
+                          setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                   }else{
+                       sbankinCb.remove((String) rb_brac.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_brac.getText());
+                   break;
+               case R.id.rb_dbbl:
+                   if (b) {
+                       sbankinCb.add((String) rb_dbbl.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_dbbl.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_dbbl.getText());
+                   break;
+               case R.id.rb_exim:
+                   if (b) {
+                       sbankinCb.add((String) rb_exim.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_exim.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_exim.getText());
+                   break;
+               case R.id.rb_ific:
+                   if (b){
+                       sbankinCb.add((String) rb_ific.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_ific.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_ific.getText());
+                   break;
+               case R.id.rb_primes:
+                   if (b){
+                       sbankinCb.add((String) rb_prime.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_prime.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_prime.getText());
+                   break;
+               default:
+                   break;
+           }
+
         }
+    }
 
 
-    }
-    private class RadioButtonClickListener implements RadioButton.OnClickListener{
-        @Override
-        public void onClick(View view) {
-            if (view.getId() == R.id.rb_brac) {
-                if(checked){}
-                    //rb_brac.setChecked(false);
-                else{}
-                    //rb_brac.setChecked(true);
-            }
-        }
-    }
     private class SearchViewListener implements SearchView.OnQueryTextListener{
 
         @Override
@@ -278,6 +376,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         @Override
         public boolean onQueryTextChange(String newText) {
+
             if(newText.isEmpty() || newText.matches("") || newText.length() == 0)
                 addDatatoList();
             filterData(newText);
@@ -372,6 +471,34 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     }
 
 
+    public void setBanktoListasCb() {
+        Log.d("SHAKIL", "listbank size 4m as cb= "+listBank.size());
+        if(listBank != null)
+            listBank.clear();
+        String bname, batmname, baddress, lat, longi, state, city;
+        if (cursor.moveToFirst()) {
+            do{
+                bname = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                batmname = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                lat = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
+                longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
+                baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
+                city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
+                state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
+                if(sbankinCb.size()!= 0) {
+                    if (sbankinCb.contains(bname)) {
+                        Log.d("SHAKIL", "yap bame contains and bname = " + bname);
+                        listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                    }
+                }else{
+                    Log.d("SHAKIL", "yap all selcted in cb");
+                    listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                }
+                adapter.notifyDataSetChanged();
+            } while (cursor.moveToNext());
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -381,5 +508,37 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 listViewPos = playerPos;
             }
         }
+    }
+
+    private void setrb_all() {
+        if(rb_all.isChecked())
+            rb_all.setChecked(false);
+    }
+    private void setrb_others() {
+        if(rb_brac.isChecked())
+            rb_brac.setChecked(false);
+        if(rb_dbbl.isChecked())
+            rb_dbbl.setChecked(false);
+        if(rb_exim.isChecked())
+            rb_exim.setChecked(false);
+        if(rb_ific.isChecked())
+            rb_ific.setChecked(false);
+        if(rb_prime.isChecked())
+            rb_prime.setChecked(false);
+        /*if(rb_brac.isChecked())
+            rb_brac.setChecked(false);
+        if(rb_brac.isChecked())
+            rb_brac.setChecked(false);
+        if(rb_brac.isChecked())
+            rb_brac.setChecked(false);
+        */
+    }
+
+    private void cb_filter(String bname){
+        for(int i = 0; i<listBank.size(); i++){
+            if(!listBank.get(i).getBname().equalsIgnoreCase(bname))
+                listBank.remove(i);
+        }
+        adapter.notifyDataSetChanged();
     }
 }

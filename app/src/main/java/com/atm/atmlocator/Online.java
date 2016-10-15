@@ -111,6 +111,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             "Bahia", "Mato Grosso", "Minas Gerais",
             "Tocantins", "Rio Grande do Sul"
     };
+    private final String cmarkerTitle = "Current Position";
     private SimpleCursorAdapter mAdapter;
     MatrixCursor c;
     public Cursor cursor;
@@ -248,6 +249,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     seekBar.setAlpha((float) 0.5);
+                    removeMarker();
                     //Log.d("SHAKIL", "on stop tracking touch");
                 }
             });
@@ -299,6 +301,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
         mMap.setOnCameraChangeListener(new CamerachangeListener());
+        mMap.setOnMapLongClickListener(new onMapLongClickListener());
         // adding marker click listener in googleMap
         mMap.setOnMarkerClickListener(new MarkerClickListener());
         //setting the camera with the specified location and animate in map
@@ -457,11 +460,18 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     }
     private void removeMarker(){
         LatLng from = circle.getCenter();
+        Log.d("SHAKIL", "now circle centre = "+from);
         for (Marker marker : listMarker){
             LatLng to = marker.getPosition();
 
             if(!isInsideCircle(from, to))
                 marker.remove();
+
+            //to remove the previous circles centre marker
+            if(to.latitude != from.latitude && to.longitude != from.longitude && marker.getTitle().equalsIgnoreCase(cmarkerTitle)) {
+                marker.remove();
+                Log.d("SHAKIL", "yap here pcircle = "+to+" and new circle = "+from+" and now it is to be removed to will be removed");
+            }
         }
     }
 
@@ -469,7 +479,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            Log.d("SHAKIL", "camera pos changed");
+            //Log.d("SHAKIL", "camera pos changed");
         }
     }
     private class MapTouchListener implements View.OnTouchListener{
@@ -813,6 +823,46 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             } else {
                 Toast.makeText(getApplicationContext(), "Something went wrong!!!", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private class onMapLongClickListener implements GoogleMap.OnMapLongClickListener{
+        private LatLngBounds bound;
+        private CameraUpdate cu;
+
+        @Override
+        public void onMapLongClick(LatLng latLng) {
+            // if long click is inside circle no new circle should be made handle this
+            if(circle != null)
+                circle.remove();
+            circle = mMap.addCircle(new CircleOptions().center(latLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
+                    .strokeWidth(3));
+            // adding a marker at the centre of the newly created circle
+            MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+            Marker marker1 = mMap.addMarker(centreMarker);
+            listMarker.add(marker1);
+            Log.d("SHAKIL", "new circle latlng = "+marker1.getPosition());
+
+            //now animate the camera to the newly made circle
+            bound = toBounds(circle.getCenter(), circle.getRadius());
+            mMap.setPadding(10, 10, 10, 30);
+            cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
+            mMap.animateCamera(cu, 1000, new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    removeMarker();
+                    //herea a conflict may arise handle it
+                    addMarker();
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+            //circle.setClickable(true);
+
         }
     }
 }
