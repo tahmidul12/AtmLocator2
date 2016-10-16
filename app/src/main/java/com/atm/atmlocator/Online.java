@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -363,7 +365,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d("SHAKIL", "yap map ready");
+        //Log.d("SHAKIL", "yap map ready");
         mapReady = true;
         mMap = googleMap;
         LatLng dhaka = new LatLng(23.7917399,90.4041357);
@@ -515,7 +517,63 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String queryLocation) {
+
+                Geocoder gc = new Geocoder(getApplicationContext());
+                boolean addGetSucful = true;
+                LatLng foundLatLng;
+                List<Address> listAddress = new ArrayList<Address>();
+                LatLngBounds bound;
+                CameraUpdate cu;
+
+                try {
+                    listAddress = gc.getFromLocationName(queryLocation, 1);
+                } catch (IOException e) {
+                    addGetSucful = false;
+                    e.printStackTrace();
+                }
+                if(addGetSucful && listAddress != null){
+                    Address locAdrs = null;
+                    if(listAddress.size()>0) {
+                        locAdrs = listAddress.get(0);
+                        foundLatLng = new LatLng(locAdrs.getLatitude(), locAdrs.getLongitude());
+                        Log.d("SHAKIL", "found latlng = " + foundLatLng + " and locality" + locAdrs.getLocality());
+                        //now circe adding and map animating to that cir and also add marker to map and list
+                        if (circle != null)
+                            circle.remove();
+                        circle = mMap.addCircle(new CircleOptions().center(foundLatLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE)
+                                .fillColor(0x5500ff00)
+                                .strokeWidth(3));
+                        //newly added
+                        MarkerOptions mySearchLocMarker = new MarkerOptions().position(foundLatLng).title(cmarkerTitle)
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                        marker = mMap.addMarker(mySearchLocMarker);
+                        listMarker.add(marker);
+                        //now bound and animate to marker
+                        bound = toBounds(circle.getCenter(), circle.getRadius());
+                        mMap.setPadding(10, 10, 10, 30);
+                        cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
+                        mMap.animateCamera(cu, 1000, new GoogleMap.CancelableCallback() {
+                            @Override
+                            public void onFinish() {
+                                removeMarker();
+                                //herea a conflict may arise handle it
+                                addMarker();
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
+
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Sorry, couldn't find any match", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Sorry, couldn't find any match", Toast.LENGTH_SHORT).show();
+                }
+                Log.d("SHAKIL", "yap query submitted");
                 return false;
             }
 
