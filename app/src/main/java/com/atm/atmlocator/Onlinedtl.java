@@ -1,10 +1,16 @@
 package com.atm.atmlocator;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +23,9 @@ import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 
 import org.w3c.dom.Text;
 
-public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanoramaReadyCallback {
+import modelClasses.BankModel;
+
+public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanoramaReadyCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
     double lat, lng;
     private LatLng atmLatLng;
@@ -25,7 +33,9 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     private boolean detFetchSuc;
 
     //
-    private TextView textv_atmName, textv_bankName;
+    private TextView textv_atmName, textv_bankName, textv_address, textv_city, textv_state;
+
+    private Cursor cursor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +56,9 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         // init layout components other than map
         textv_atmName = (TextView) findViewById(R.id.textv_atmName);
         textv_bankName = (TextView) findViewById(R.id.textv_bankName);
-
+        textv_address = (TextView) findViewById(R.id.textv_address);
+        textv_city = (TextView) findViewById(R.id.textv_city);
+        textv_state = (TextView) findViewById(R.id.textv_state);
         // receving lat lng  and other details from previous activity
         detFetchSuc = false;
         if(getIntent() != null){
@@ -71,6 +83,8 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
                 .findFragmentById(R.id.mapstreet);
         streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
 
+        // cursor loading
+        getSupportLoaderManager().initLoader(1, null, this);
 
     }
 
@@ -83,5 +97,63 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         }else{
             Toast.makeText(getApplicationContext(), "Sorry could't load Street View!!!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d("SHAKIL", "4m onCreateLoader");
+        String URL = "content://com.atmlocator.Bank/atms";
+        Uri atmsUri = Uri.parse(URL);
+        return new android.support.v4.content.CursorLoader(this, atmsUri, null, null, null, "bank");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        cursor = data;
+        addDatatoList();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private void addDatatoList() {
+
+        String bname, batmname, baddress, lati, longi, state, city;
+        boolean found = false;
+        if (cursor.moveToFirst()) {
+            do{
+                bname = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                batmname = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                lati = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
+                longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
+                baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
+                city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
+                state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
+                if(lat == Double.parseDouble(lati) && lng == Double.parseDouble(longi)) {
+                    found = true;
+                    break;
+                }
+                //listBank.add(new BankModel(bname, batmname, lat, longi, baddress, city, state, null));
+                //adapter.notifyDataSetChanged();
+            } while (cursor.moveToNext());
+            if(found){
+                textv_address.setText(baddress);
+                textv_city.setText(city);
+                textv_state.setText(state);
+                found = false;
+            }
+
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+            Log.d("SHAKIL", "yap back button clicked");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
