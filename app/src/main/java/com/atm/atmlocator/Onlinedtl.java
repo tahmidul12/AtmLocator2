@@ -12,9 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
 import com.google.android.gms.maps.StreetViewPanoramaFragment;
@@ -36,6 +40,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     private TextView textv_atmName, textv_bankName, textv_address, textv_city, textv_state;
 
     private Cursor cursor;
+
+    //for add
+    AdView adView;
+    private LinearLayout linearv_add;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +51,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,6 +59,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
                         .setAction("Action", null).show();
             }
         });
+        */
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // init layout components other than map
@@ -59,6 +68,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         textv_address = (TextView) findViewById(R.id.textv_address);
         textv_city = (TextView) findViewById(R.id.textv_city);
         textv_state = (TextView) findViewById(R.id.textv_state);
+
+        //for adview
+        adView = (AdView) findViewById(R.id.adView);
+        linearv_add = (LinearLayout) findViewById(R.id.linearv_add);
         // receving lat lng  and other details from previous activity
         detFetchSuc = false;
         if(getIntent() != null){
@@ -85,6 +98,12 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
 
         // cursor loading
         getSupportLoaderManager().initLoader(1, null, this);
+
+        //setting adview
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+        //adView.setOnClickListener((View.OnClickListener) new CustomAdListener(this));
+        adView.setAdListener(new CustomAdListener());
 
     }
 
@@ -155,5 +174,42 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private class CustomAdListener extends com.google.android.gms.ads.AdListener {
+        @Override
+        public void onAdLoaded() {
+            if(linearv_add != null && linearv_add.getVisibility() == View.GONE){
+                linearv_add.setVisibility(View.VISIBLE);
+            }
+            Log.d("SHAKIL", "yap add loaded");
+            super.onAdLoaded();
+        }
+
+        @Override
+        public void onAdOpened() {
+            Log.d("SHAKIL", "yap add opened");
+            super.onAdOpened();
+        }
+
+        @Override
+        public void onAdClosed() {
+            if(linearv_add.getVisibility() == View.VISIBLE){
+                //linearv_add.setVisibility(View.GONE);
+            }
+            Log.d("SHAKIL", "yap add closed");
+            super.onAdClosed();
+        }
+
+        @Override
+        public void onAdFailedToLoad(int i) {
+            Log.d("SHAKIL", "yap add fail to load");
+            super.onAdFailedToLoad(i);
+        }
+
+        @Override
+        public void onAdLeftApplication() {
+            Log.d("SHAKIL", "yap add left application");
+            super.onAdLeftApplication();
+        }
     }
 }
