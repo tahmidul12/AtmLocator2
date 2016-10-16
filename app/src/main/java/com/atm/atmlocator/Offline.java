@@ -47,7 +47,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     private TextView textv_noSearch;
     private ListView listOfBank;
     private RelativeLayout rlmenu;
-    private CheckBox rb_dbbl, rb_brac, rb_exim, rb_ific, rb_all, rb_prime;
+    private CheckBox rb_dbbl, rb_brac, rb_exim, rb_ific, rb_all, rb_prime,
+            rb_ab, rb_city, rb_hsbc, rb_one, rb_premier, rb_scb, rb_ucbl, rb_seb;
     private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
     private ArrayAdapter<BankModel> adapter;
@@ -99,12 +100,30 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         rb_ific = (CheckBox) findViewById(R.id.rb_ific);
         rb_exim = (CheckBox) findViewById(R.id.rb_exim);
 
+        rb_ab =  (CheckBox) findViewById(R.id.rb_ab);
+        rb_city = (CheckBox) findViewById(R.id.rb_city);
+        rb_hsbc = (CheckBox) findViewById(R.id.rb_hsbc);
+        rb_one = (CheckBox) findViewById(R.id.rb_one);
+        rb_premier = (CheckBox) findViewById(R.id.rb_premier);
+        rb_scb = (CheckBox) findViewById(R.id.rb_scb);
+        rb_ucbl = (CheckBox) findViewById(R.id.rb_ucbl);
+        rb_seb = (CheckBox) findViewById(R.id.rb_seb);
+
+
         rb_all.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_brac.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_dbbl.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_ific.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_exim.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_prime.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_ab.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_city.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_hsbc.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_one.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_premier.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_scb.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_ucbl.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_seb.setOnCheckedChangeListener(new RadioButtonCheckListener());
 
         //experimental
         content_offline = (RelativeLayout) findViewById(R.id.content_offline);
@@ -362,6 +381,115 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    }
                    Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_prime.getText());
                    break;
+               //
+               case R.id.rb_ab:
+                   if (b) {
+                       sbankinCb.add((String) rb_ab.getText());
+                       setrb_all();
+                       if(sbankinCb.size() < 4)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                   }else{
+                       sbankinCb.remove((String) rb_ab.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_brac.getText());
+                   break;
+               case R.id.rb_city:
+                   if (b) {
+                       sbankinCb.add((String) rb_city.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_city.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_dbbl.getText());
+                   break;
+               case R.id.rb_hsbc:
+                   if (b) {
+                       sbankinCb.add((String) rb_hsbc.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_hsbc.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_exim.getText());
+                   break;
+               case R.id.rb_one:
+                   if (b){
+                       sbankinCb.add((String) rb_one.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_one.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_ific.getText());
+                   break;
+               case R.id.rb_premier:
+                   if (b){
+                       sbankinCb.add((String) rb_premier.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_premier.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_prime.getText());
+                   break;
+               //
+               case R.id.rb_scb:
+                   if (b) {
+                       sbankinCb.add((String) rb_scb.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_scb.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = " + sbankinCb.size() + " added bank=" + rb_exim.getText());
+                   break;
+               case R.id.rb_ucbl:
+                   if (b){
+                       sbankinCb.add((String) rb_ucbl.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_ucbl.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_ific.getText());
+                   break;
+               case R.id.rb_seb:
+                   if (b){
+                       sbankinCb.add((String) rb_seb.getText());
+                       setrb_all();
+                       setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_seb.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_prime.getText());
+                   break;
                default:
                    break;
            }
@@ -528,13 +656,26 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
             rb_ific.setChecked(false);
         if(rb_prime.isChecked())
             rb_prime.setChecked(false);
-        /*if(rb_brac.isChecked())
-            rb_brac.setChecked(false);
-        if(rb_brac.isChecked())
-            rb_brac.setChecked(false);
-        if(rb_brac.isChecked())
-            rb_brac.setChecked(false);
-        */
+
+        if(rb_ab.isChecked())
+            rb_ab.setChecked(false);
+        if(rb_city.isChecked())
+            rb_city.setChecked(false);
+        if(rb_hsbc.isChecked())
+            rb_hsbc.setChecked(false);
+        //
+        if(rb_one.isChecked())
+            rb_one.setChecked(false);
+        if(rb_premier.isChecked())
+            rb_premier.setChecked(false);
+        if(rb_scb.isChecked())
+            rb_scb.setChecked(false);
+
+        if(rb_ucbl.isChecked())
+            rb_ucbl.setChecked(false);
+        if(rb_seb.isChecked())
+            rb_seb.setChecked(false);
+
     }
 
     private void cb_filter(String bname){

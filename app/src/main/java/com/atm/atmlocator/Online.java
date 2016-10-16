@@ -707,7 +707,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Toast.makeText(getApplicationContext(), "cursor row no : "+data.getCount(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "cursor row no : "+data.getCount(), Toast.LENGTH_SHORT).show();
         if(data.getCount() <1)
             new DataAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         else
