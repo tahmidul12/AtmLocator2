@@ -1,9 +1,11 @@
 package com.atm.atmlocator;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -63,6 +65,9 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     MenuItem banklists;
     private String selected_bank = "All";
     private boolean checked = false;
+
+    //for net checking
+    private boolean netConOkey = false;
     /*
     experimental
      */
@@ -82,9 +87,13 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Offline.this, Online.class);
-                startActivity(intent);
-                finish();
+                if(check_net_connection()){
+                    Intent intent = new Intent(Offline.this, Online.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Please check your internet connection..", Toast.LENGTH_SHORT).show();
+                }
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                   //      .setAction("Action", null).show();
             }
@@ -684,5 +693,13 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                 listBank.remove(i);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private boolean check_net_connection() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(manager.getActiveNetworkInfo() != null) {
+            return true;
+        }
+        return false;
     }
 }

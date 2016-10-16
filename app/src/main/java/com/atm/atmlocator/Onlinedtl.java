@@ -101,7 +101,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("SHAKIL", "4m onCreateLoader");
+        //Log.d("SHAKIL", "4m onCreateLoader");
         String URL = "content://com.atmlocator.Bank/atms";
         Uri atmsUri = Uri.parse(URL);
         return new android.support.v4.content.CursorLoader(this, atmsUri, null, null, null, "bank");
