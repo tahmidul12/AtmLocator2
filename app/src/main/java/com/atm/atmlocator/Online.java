@@ -399,10 +399,23 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 return infoWindow;
             }
         });
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                LatLng mLatLng = marker.getPosition();
+                Intent intent = new Intent(Online.this, Onlinedtl.class);
+                intent.putExtra("bname", marker.getTitle());
+                intent.putExtra("batmname", marker.getSnippet());
+                intent.putExtra("lat", mLatLng.latitude);
+                intent.putExtra("lng", mLatLng.longitude);
+                startActivity(intent);
+                //Toast.makeText(getApplicationContext(), "info Window clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
         //added finshed for custom infowindow
         //setting the camera with the specified location and animate in map
         CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 3000, null);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 1800, null);
     }
     public LatLngBounds toBounds(LatLng center, double radius) {
         LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);

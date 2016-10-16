@@ -27,6 +27,8 @@
                 android:layout_gravity="top"
                 android:gravity="left"
                 android:text="BSL Div U-18"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textSize="18sp"/>
             <View
                 android:layout_width="match_parent"
@@ -48,7 +50,8 @@
                 android:layout_gravity="bottom"
                 android:gravity="left"
                 android:text="BSL Div U-18"
-                android:maxLines="2"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:textSize="13sp"/>
         </LinearLayout>
     </LinearLayout>

@@ -39,11 +39,11 @@
             <RelativeLayout
                 android:id="@+id/relateV"
                 android:layout_width="match_parent"
-                android:layout_margin="4dp"
+                android:layout_margin="0dp"
                 android:layout_height="300dp"
                 android:paddingBottom="2.0dp"
-                android:paddingLeft="1dp"
-                android:paddingRight="1dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
                 android:paddingTop="0.5dp"
                 android:background="@drawable/map_back"
                 android:layout_weight="9.5">

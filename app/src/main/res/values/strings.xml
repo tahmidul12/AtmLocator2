@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_offline">AtmLocator</string>
     <string name="API_KEY">AIzaSyBwelRv3SDaXh4oJw-tJFfpJZlV9FHnzDI</string>
-    <string name="title_activity_offlinedtl">Offlinedtl</string>
+    <string name="title_activity_offlinedtl">Atm Details</string>
     <string name="Offline_Bank_Spinner_Prompt">Select Bank</string>
 
     <string-array name="allBankName">
@@ -23,4 +23,5 @@
         <item>UCBL</item>
         <item>South-East Bank</item>
     </string-array>
+    <string name="title_activity_onlinedtl">Atm Details</string>
 </resources>

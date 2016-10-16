@@ -38,6 +38,7 @@
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <!--<item name="android:windowExitAnimation">@anim/fade_out</item>-->
     </style>
+
     <style name="FadeOnline">
         <item name="android:windowEnterAnimation">@anim/fade_inleft</item>
         <!--<item name="android:windowExitAnimation">@anim/fade_out</item>-->
