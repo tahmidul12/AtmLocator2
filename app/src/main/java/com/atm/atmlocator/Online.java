@@ -3,6 +3,7 @@ package com.atm.atmlocator;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -156,6 +157,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     //for add
     AdView adView;
     private LinearLayout linearv_add;
+    // for track user last circle latlng previous circle lat long
+    LatLng preCirLatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,13 +382,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //Log.d("SHAKIL", "yap map ready");
+        Log.d("SHAKIL", "yap map ready");
         mapReady = true;
         mMap = googleMap;
         LatLng dhaka = new LatLng(23.7917399,90.4041357);
         LatLng mOffice = new LatLng(23.7936268,90.4005859);
         //creating and adding a circle
-        final CircleOptions circleOptions = new CircleOptions().center(mOffice).radius(Constant.CIRCLE_RADIUS_MIN)
+        final CircleOptions circleOptions = new CircleOptions().center(preCirLatLng).radius(Constant.CIRCLE_RADIUS_MIN)
                 .strokeColor(Color.BLUE).fillColor(0x5500ff00)
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
@@ -430,7 +433,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         });
         //added finshed for custom infowindow
         //setting the camera with the specified location and animate in map
-        CameraPosition target = CameraPosition.builder().target(mOffice).zoom(14).build();
+        CameraPosition target = CameraPosition.builder().target(preCirLatLng).zoom(14).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(target), 1800, null);
     }
     public LatLngBounds toBounds(LatLng center, double radius) {
@@ -703,6 +706,13 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         super.onStop();
         if(mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
+        preCirLatLng = new LatLng(circle.getCenter().latitude, circle.getCenter().longitude);
+        SharedPreferences preferences = getSharedPreferences(Constant.SHARED_PREFERENCE_ATMLOCATOR, 0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constant.CIRCLE_LAST_LAT, Double.toString(preCirLatLng.latitude));
+        editor.putString(Constant.CIRCLE_LAST_LNG, Double.toString(preCirLatLng.longitude));
+        editor.commit();
+        Log.d("SHAKIL", "yap last circle details inserted");
     }
 
     @Override
@@ -986,7 +996,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     @Override
     protected void onPause() {
         imButtonDir.setVisibility(View.INVISIBLE);
-        super.onResume();
+        super.onPause();
     }
 
     // added all for directions
@@ -1229,6 +1239,24 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     public static int getPixelsFromDp(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int)(dp * scale + 0.5f);
+    }
+
+
+    @Override
+    protected void onResume() {
+        SharedPreferences preferences = getSharedPreferences(Constant.SHARED_PREFERENCE_ATMLOCATOR, 0);
+        String lat = preferences.getString(Constant.CIRCLE_LAST_LAT, null);
+        String lng = preferences.getString(Constant.CIRCLE_LAST_LNG, null);
+        if(lat != null && lng != null) {
+            preCirLatLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+            Log.d("SHAKIL", "yap got saved circle centre");
+        }else{
+            preCirLatLng = new LatLng(Constant.DEFAULT_CIRCLE_LAT, Constant.DEFAULT_CIRCLE_LNG);
+            Log.d("SHAKIL", "nope default given circle centre");
+        }
+        //Home api key: AIzaSyDorQ-vpTTQMP5ypVhCEc-Zxfo5M6ZfF8U
+        //Office api key: AIzaSyBwelRv3SDaXh4oJw-tJFfpJZlV9FHnzDI
+        super.onResume();
     }
 }
 

@@ -11,5 +11,11 @@ public class Constant {
 
     //for launcher activity timer time
     final public static long WAIT_TIME = 500;
+    public static String CIRCLE_LAST_LAT = "last_lat";
+    public static String CIRCLE_LAST_LNG = "last_lng";
+    public static String SHARED_PREFERENCE_ATMLOCATOR = "AtmLocator";
+
+    public static Double DEFAULT_CIRCLE_LAT = 23.7936268;
+    public static Double DEFAULT_CIRCLE_LNG = 90.4005859;
 }
 
