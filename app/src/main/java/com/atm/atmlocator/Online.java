@@ -47,6 +47,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -151,6 +153,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private LatLng userLatLng;
     private boolean apiConnected;
     private boolean uLocDetected;
+    //for add
+    AdView adView;
+    private LinearLayout linearv_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +223,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 getContentResolver().delete(AtmProvider.CONTENT_URI, null, null);
             }
         });*/
+        //for adview
+        adView = (AdView) findViewById(R.id.adView);
+        linearv_add = (LinearLayout) findViewById(R.id.linearv_add);
+        //setting adview
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+        //adView.setOnClickListener((View.OnClickListener) new CustomAdListener(this));
+        adView.setAdListener(new CustomAdListener());
+        //
         lineout = (LinearLayout) findViewById(R.id.viewA);
         relateV = (RelativeLayout) findViewById(R.id.relateV);
         myFabOnline = (FloatingActionButton) findViewById(R.id.myFabOnline);
@@ -1172,6 +1186,46 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
         }
     }
+
+    private class CustomAdListener extends com.google.android.gms.ads.AdListener {
+        @Override
+        public void onAdLoaded() {
+            if(linearv_add != null && linearv_add.getVisibility() == View.GONE){
+                linearv_add.setVisibility(View.VISIBLE);
+                Log.d("SHAKIL", "yap visibility set to visible");
+            }
+            Log.d("SHAKIL", "yap add loaded");
+            super.onAdLoaded();
+        }
+
+        @Override
+        public void onAdOpened() {
+            Log.d("SHAKIL", "yap add opened");
+            super.onAdOpened();
+        }
+
+        @Override
+        public void onAdClosed() {
+            if(linearv_add.getVisibility() == View.VISIBLE){
+                //linearv_add.setVisibility(View.GONE);
+            }
+            Log.d("SHAKIL", "yap add closed");
+            super.onAdClosed();
+        }
+
+        @Override
+        public void onAdFailedToLoad(int i) {
+            Log.d("SHAKIL", "yap add fail to load");
+            super.onAdFailedToLoad(i);
+        }
+
+        @Override
+        public void onAdLeftApplication() {
+            Log.d("SHAKIL", "yap add left application");
+            super.onAdLeftApplication();
+        }
+    }
+
     public static int getPixelsFromDp(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int)(dp * scale + 0.5f);

@@ -100,10 +100,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         getSupportLoaderManager().initLoader(1, null, this);
 
         //setting adview
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        //AdRequest adRequest = new AdRequest.Builder().build();
+        //adView.loadAd(adRequest);
         //adView.setOnClickListener((View.OnClickListener) new CustomAdListener(this));
-        adView.setAdListener(new CustomAdListener());
+        //adView.setAdListener(new CustomAdListener());
 
     }
 
@@ -175,6 +175,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         }
         return super.onOptionsItemSelected(item);
     }
+
     private class CustomAdListener extends com.google.android.gms.ads.AdListener {
         @Override
         public void onAdLoaded() {

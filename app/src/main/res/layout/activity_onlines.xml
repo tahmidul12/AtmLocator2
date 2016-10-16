@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads = "http://schemas.android.com/apk/res-auto"
     xmlns:map = "http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -40,18 +41,18 @@
                 android:id="@+id/relateV"
                 android:layout_width="match_parent"
                 android:layout_margin="0dp"
-                android:layout_height="300dp"
-                android:paddingBottom="2.0dp"
+                android:layout_height="0dp"
+                android:paddingBottom="0.0dp"
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
                 android:paddingTop="0.5dp"
                 android:background="@drawable/map_back"
-                android:layout_weight="9.5">
+                android:layout_weight="9.0">
                 <com.atm.atmlocator.MapWrapperLayout
                     android:id="@+id/map_relative_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight = "5">
+                    android:layout_weight = "2">
                 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -80,6 +81,21 @@
                     android:layout_weight="1"
                     android:layout_marginTop="0dp"/>
             </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/linearv_add"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="visible"
+                android:orientation="vertical"
+                android:layout_weight="1.0">
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    ads:adSize = "BANNER"
+                    ads:adUnitId ="@string/banner_ad_unit_id">
+                </com.google.android.gms.ads.AdView>
+            </LinearLayout>
             <!--
                         <TextView
 
