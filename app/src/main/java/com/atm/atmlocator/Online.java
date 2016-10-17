@@ -155,6 +155,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private LatLng userLatLng;
     private boolean apiConnected;
     private boolean uLocDetected;
+    private boolean myLocMarkerAvailable = false;
     //for add
     AdView adView;
     private LinearLayout linearv_add;
@@ -535,6 +536,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 //newly added
                 if(circle != null)
                     circle.remove();
+                //remove polyline
+                removePoly();
                 circle = mMap.addCircle(new CircleOptions().center(location).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE)
                         .fillColor(0x5500ff00)
                         .strokeWidth(3));
@@ -599,6 +602,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         //now circe adding and map animating to that cir and also add marker to map and list
                         if (circle != null)
                             circle.remove();
+                        //remove polyline
+                        removePoly();
                         circle = mMap.addCircle(new CircleOptions().center(foundLatLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE)
                                 .fillColor(0x5500ff00)
                                 .strokeWidth(3));
@@ -941,12 +946,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
        @Override
        public boolean onMarkerClick(Marker marker) {
-           if(listPolyline.size() > 0) {
-               for (Polyline polyline : listPolyline){
-                         polyline.remove();
-                         Log.d("SHAKIL", "polyline removed no:"+polyline.getId());
-               }
-           }
+           //remove poly on click of another marker
+           removePoly();
+
            imButtonDir.setVisibility(View.VISIBLE);
            if(!imButtonDir.isClickable())
                imButtonDir.setClickable(true);
@@ -969,7 +971,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         @Override
         public void onClick(View v) {
 
-            if(v.getId() == R.id.imButtonDir){
+            if(v.getId() == R.id.imButtonDir) {
                 LatLng origin = circle.getCenter();
                 LatLng dest = clickedMarkerLatlng;
 
@@ -1008,14 +1010,21 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         CameraUpdate cu;
        if(uLocDetected && mapReady){
            // check to remove polyline here and when searchview click happen as a new circle add we should remove polylines
+           // removing poly created on previous circle
+           removePoly();
            if(circle != null)
                circle.remove();
            circle = mMap.addCircle(new CircleOptions().center(userLatLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
                    .strokeWidth(3));
            // adding a marker at the centre of the newly created circle
-           MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).snippet("").title("My Location")
-                   .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
-           Marker marker1 = mMap.addMarker(centreMarker);
+           // when user will click the current user loc button only then marker will be added later on as the marker is added so no need to add
+           // marker anymore as it is not removed once set
+           if(!myLocMarkerAvailable) {
+               MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).snippet("").title("My Location")
+                       .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
+               Marker marker1 = mMap.addMarker(centreMarker);
+               myLocMarkerAvailable = true;
+           }
            // not added to the list as it will remain forever even if a new circle is added
            //adjusting seekbar with newly created circle by setting it to 0
            seekBarOnline.setProgress(0);
@@ -1210,6 +1219,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             // check to remove polyline here and when searchview click happen as a new circle add we should remove polylines
             if(circle != null)
                 circle.remove();
+
+            //remove polyline
+            removePoly();
             circle = mMap.addCircle(new CircleOptions().center(latLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
                     .strokeWidth(3));
             // adding a marker at the centre of the newly created circle
@@ -1315,6 +1327,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             backPressedOnce = true;
         }
 
+    }
+
+    private void removePoly(){
+        if(listPolyline.size() > 0) {
+            for (Polyline polyline : listPolyline){
+                polyline.remove();
+                //Log.d("SHAKIL", "polyline removed no:"+polyline.getId());
+            }
+        }
     }
 }
 

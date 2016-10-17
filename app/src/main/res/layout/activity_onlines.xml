@@ -73,11 +73,11 @@
                     android:id="@+id/imButtonDir"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/map_relative_layout"
+                    android:layout_alignTop="@+id/map_relative_layout"
                     android:src="@drawable/bubble_mask"
                     android:visibility="invisible"
                     android:layout_marginRight="-59dp"
-                    android:layout_marginBottom="44dp"
+                    android:layout_marginTop="25dp"
                     android:layout_alignParentRight="true"/>
                 <SeekBar
                     android:id="@+id/seekBarOnline"
