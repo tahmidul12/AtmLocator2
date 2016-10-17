@@ -24,7 +24,7 @@ import java.util.TimerTask;
 
 import apiconstant.Constant;
 
-public class Home extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class Home extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     Timer timer, timer2;
     private Cursor cursor;

@@ -15,6 +15,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:text="Title" />
 
         <TextView
@@ -29,8 +33,9 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/tpWhiteColor"
+        android:background="@mipmap/infobtns"
         android:clickable="false"
-        android:text="Details" />
+        android:textColor="#ffffff"
+        android:text="" />
 
 </LinearLayout>

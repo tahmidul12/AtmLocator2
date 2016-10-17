@@ -50,6 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
                     android:text="Bank name"
                     android:textSize="16sp"/>
             </LinearLayout>
@@ -62,6 +63,7 @@
                     android:id="@+id/imgv_atm"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     android:src="@mipmap/samplebanklogo"/>
             </LinearLayout>
 

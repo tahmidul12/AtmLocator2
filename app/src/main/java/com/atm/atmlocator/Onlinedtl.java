@@ -229,7 +229,8 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         textv_city.setText(city);
         textv_state.setText(state);
         //
-        imgv_atm.setVisibility(View.GONE);
+        if(imgv_atm.getVisibility() == View.VISIBLE || imgv_atm.getVisibility() == View.INVISIBLE)
+           imgv_atm.setVisibility(View.GONE);
     }
 
     private class CustomAdListener extends com.google.android.gms.ads.AdListener {

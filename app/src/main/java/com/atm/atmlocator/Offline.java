@@ -2,7 +2,9 @@ package com.atm.atmlocator;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -83,9 +85,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setTitle("AtmLocator");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList.valueOf(Color
+                .parseColor("#ffffff")));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

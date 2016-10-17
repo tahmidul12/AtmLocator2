@@ -74,9 +74,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/map_relative_layout"
-                    android:src="@drawable/bubble_mask"
+                    android:src="@mipmap/drbtn"
+                    android:background="@android:color/transparent"
                     android:visibility="invisible"
-                    android:layout_marginRight="-59dp"
+                    android:layout_marginRight="-43dp"
                     android:layout_marginTop="25dp"
                     android:layout_alignParentRight="true"/>
                 <SeekBar
@@ -148,10 +149,11 @@
         android:layout_marginLeft="18dp"
         android:layout_marginTop="420dp"
         android:layout_marginBottom="0dp"
+        android:backgroundTint="#ffffff"
         android:layout_gravity="left"
         android:layout_above="@+id/map"
         android:clickable="true"
-        android:src="@mipmap/marker"
+        android:src="@mipmap/offlinelogo"
         app:fabSize="mini"
         />
     <android.support.design.widget.FloatingActionButton
@@ -161,10 +163,12 @@
         android:layout_marginRight="18dp"
         android:layout_marginTop="420dp"
         android:layout_marginBottom="0dp"
+        android:backgroundTint="#ffffff"
+        android:tint="@color/colorPrimary"
         android:layout_gravity="right"
         android:layout_above="@+id/map"
         android:clickable="true"
-        android:src="@mipmap/marker7"
+        android:src="@android:drawable/ic_menu_mylocation"
         app:fabSize="mini"
         />
 

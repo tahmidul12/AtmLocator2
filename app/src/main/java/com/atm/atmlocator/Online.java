@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.Color;
@@ -172,7 +173,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.mipmap.marker9);
+        toolbar.setLogo(R.mipmap.ic_launcher);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation((float)5);
         }
@@ -193,8 +194,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         this.infoSnippet = (TextView)infoWindow.findViewById(R.id.snippet);
         this.infoButton = (Button)infoWindow.findViewById(R.id.button);
         this.infoButtonListener = new OnInfoWindowElemTouchListener(infoButton,
-                getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light),
-                getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light))
+                getResources().getDrawable(R.mipmap.infobtns),
+                getResources().getDrawable(R.mipmap.infobtns))
         {
             @Override
             protected void onClickConfirmed(View v, Marker marker) {
@@ -242,7 +243,12 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         lineout = (LinearLayout) findViewById(R.id.viewA);
         relateV = (RelativeLayout) findViewById(R.id.relateV);
         myFabOnline = (FloatingActionButton) findViewById(R.id.myFabOnline);
+        myFabOnline.setBackgroundTintList(ColorStateList.valueOf(Color
+                .parseColor("#ffffff")));
         myFabCurrentLoc = (FloatingActionButton) findViewById(R.id.myFabCurrentLoc);
+
+        myFabCurrentLoc.setBackgroundTintList(ColorStateList.valueOf(Color
+                .parseColor("#ffffff")));
         myFabOnline.setOnClickListener(new ButtonClickListener());
         myFabCurrentLoc.setOnClickListener(new ButtonClickListener());
         imButtonDir = (ImageButton) findViewById(R.id.imButtonDir);
@@ -403,18 +409,18 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         if(uLocDetected && userLatLng != null){
             if(preCirLatLng.longitude == userLatLng.longitude && preCirLatLng.latitude == userLatLng.latitude){
                 MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title("My Location")
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
                 Marker marker1 = mMap.addMarker(centreMarker);
             }
             else{
                 MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
                 Marker marker1 = mMap.addMarker(centreMarker);
                 listMarker.add(marker1);
             }
         }else{
         MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
         Marker marker1 = mMap.addMarker(centreMarker);
         listMarker.add(marker1);
         }
@@ -545,7 +551,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         .strokeWidth(3));
                 //newly added
                 MarkerOptions myOffice = new MarkerOptions().position(location).title(bankName)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
                 marker = mMap.addMarker(myOffice);
                 listMarker.add(marker);
                 //adjusting seekbar with newly created circle by setting it to 0
@@ -611,7 +617,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                                 .strokeWidth(3));
                         //newly added
                         MarkerOptions mySearchLocMarker = new MarkerOptions().position(foundLatLng).title(cmarkerTitle)
-                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
                         marker = mMap.addMarker(mySearchLocMarker);
                         listMarker.add(marker);
                         //now bound and animate to marker
@@ -717,7 +723,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 if(isInsideCircle(from, to) && from.latitude != to.latitude && from.longitude != to.longitude) {
                     //adding a marker
                     MarkerOptions myOffice = new MarkerOptions().position(to).snippet(batmNmae).title(bankName)
-                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker4));
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.litemlogo));
                     Marker marker1 = mMap.addMarker(myOffice);
                     listMarker.add(marker1);
                 }
@@ -1023,7 +1029,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
            // marker anymore as it is not removed once set
            if(!myLocMarkerAvailable) {
                MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).snippet("").title("My Location")
-                       .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
+                       .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
                Marker marker1 = mMap.addMarker(centreMarker);
                myLocMarkerAvailable = true;
            }
@@ -1228,7 +1234,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                     .strokeWidth(3));
             // adding a marker at the centre of the newly created circle
             MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.muloc));
             Marker marker1 = mMap.addMarker(centreMarker);
             listMarker.add(marker1);
             //adjusting seekbar with newly created circle by setting it to 0
