@@ -234,17 +234,17 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
 
         getMenuInflater().inflate(R.menu.menu_offline, menu);
         MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
-        MenuItem spinneritem = menu.findItem(R.id.spinner);
+        //MenuItem spinneritem = menu.findItem(R.id.spinner);
         MenuItem banklist = menu.findItem(R.id.action_bank);
         banklists = banklist;
         bankPopUpView = banklist.getActionView();
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(spinneritem);
+        //Spinner spinner = (Spinner) MenuItemCompat.getActionView(spinneritem);
         ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(this,
                 R.array.allBankName, android.R.layout.simple_spinner_item);
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spinner.setAdapter(adapterSpinner);
-        spinner.setOnItemSelectedListener(new SpinnerItemSelectedListener());
+        //spinner.setAdapter(adapterSpinner);
+        //spinner.setOnItemSelectedListener(new SpinnerItemSelectedListener());
         View actionView = myActionMenuItem.getActionView();
         //AutoCompleteTextView searchView = (AutoCompleteTextView) actionView.findViewById(R.id.action_search);
         final SearchView searchView = (SearchView) myActionMenuItem.getActionView();

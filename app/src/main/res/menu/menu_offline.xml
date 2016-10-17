@@ -13,6 +13,7 @@
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"
         android:title="Search"/>
+    <!--
     <item
         android:id="@+id/spinner"
         android:title="Select Bank"
@@ -21,5 +22,6 @@
         android:entries="@array/allBankName"
         android:prompt="@string/Offline_Bank_Spinner_Prompt"
         app:showAsAction="collapseActionView" />
+        -->
 
 </menu>

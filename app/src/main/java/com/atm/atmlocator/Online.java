@@ -320,6 +320,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                             public void onFinish() {
                                 //setPolygon();
                                 removeMarker();
+                                //removing the polylines outside circle
+                                cutPolylineOutsideCircle();
                             }
 
                             @Override
@@ -1331,8 +1333,29 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
     private void removePoly(){
         if(listPolyline.size() > 0) {
-            for (Polyline polyline : listPolyline){
+            for (Polyline polyline : listPolyline) {
                 polyline.remove();
+                //Log.d("SHAKIL", "polyline removed no:"+polyline.getId());
+            }
+        }
+    }
+
+    private void cutPolylineOutsideCircle() {
+
+        if(listPolyline.size() > 0) {
+            for (Polyline polyline : listPolyline) {
+                boolean inside = true;
+                List<LatLng> listLatLng = new ArrayList<LatLng>();
+                listLatLng = polyline.getPoints();
+                for(LatLng latLng : listLatLng){
+                    if(!isInsideCircle(circle.getCenter(), latLng)) {
+                        inside = false;
+                        break;
+                    }
+                }
+                if(!inside)
+                    polyline.remove();
+                //polyline.remove();
                 //Log.d("SHAKIL", "polyline removed no:"+polyline.getId());
             }
         }
