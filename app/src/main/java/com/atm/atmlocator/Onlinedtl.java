@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     //for add
     AdView adView;
     private LinearLayout linearv_add;
+    private ImageView imgv_atm;
     //
     private boolean forMyLoc = false;
     private String address, city, state;
@@ -82,6 +84,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         //for adview
         adView = (AdView) findViewById(R.id.adView);
         linearv_add = (LinearLayout) findViewById(R.id.linearv_add);
+        imgv_atm = (ImageView) findViewById(R.id.imgv_atm);
         // receving lat lng  and other details from previous activity
         detFetchSuc = false;
         if(getIntent() != null){
@@ -220,11 +223,13 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
             city = "not found";
             state = "not found";
         }
+        textv_atmName.setText("Street View");
+        textv_bankName.setText("MY LOCATION");
         textv_address.setText(address);
         textv_city.setText(city);
         textv_state.setText(state);
         //
-        linearv_atm.setVisibility(View.GONE);
+        imgv_atm.setVisibility(View.GONE);
     }
 
     private class CustomAdListener extends com.google.android.gms.ads.AdListener {
