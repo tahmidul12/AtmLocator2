@@ -134,6 +134,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="South-East Bank"/>
+            <CheckBox
+                android:id="@+id/rb_dhaka"
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dhaka Bank"/>
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

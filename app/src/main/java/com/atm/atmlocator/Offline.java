@@ -50,7 +50,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
     private ListView listOfBank;
     private RelativeLayout rlmenu;
     private CheckBox rb_dbbl, rb_brac, rb_exim, rb_ific, rb_all, rb_prime,
-            rb_ab, rb_city, rb_hsbc, rb_one, rb_premier, rb_scb, rb_ucbl, rb_seb;
+            rb_ab, rb_city, rb_hsbc, rb_one, rb_premier, rb_scb, rb_ucbl, rb_seb, rb_dhaka;
     private int pageNo, backpressDo = 0, listViewPos = 0;
     private ArrayAdapterBank arrayAdapterBank;
     private ArrayAdapter<BankModel> adapter;
@@ -73,6 +73,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
      */
     Rect rlmenu_rect;
     private RelativeLayout content_offline;
+    // for app exit handle
+    private boolean backPressedOnce;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +119,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         rb_scb = (CheckBox) findViewById(R.id.rb_scb);
         rb_ucbl = (CheckBox) findViewById(R.id.rb_ucbl);
         rb_seb = (CheckBox) findViewById(R.id.rb_seb);
-
+        rb_dhaka = (CheckBox) findViewById(R.id.rb_dhaka);
 
         rb_all.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_brac.setOnCheckedChangeListener(new RadioButtonCheckListener());
@@ -133,6 +135,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         rb_scb.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_ucbl.setOnCheckedChangeListener(new RadioButtonCheckListener());
         rb_seb.setOnCheckedChangeListener(new RadioButtonCheckListener());
+        rb_dhaka.setOnCheckedChangeListener(new RadioButtonCheckListener());
 
         //experimental
         content_offline = (RelativeLayout) findViewById(R.id.content_offline);
@@ -312,6 +315,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
            switch (compoundButton.getId()) {
                case R.id.rb_all:
                    if (b) {
+                       Log.d("SHAKIL", "yyap all is checked from brac now data wil l be reset and set");
                        sbankinCb.clear();
                        setrb_others();
                        setBanktoListasCb();
@@ -326,10 +330,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_brac.getText());
                        setrb_all();
-                       if(sbankinCb.size() < 4)
+                       if(sbankinCb.size() < 14)
                           setBanktoListasCb();
-                       else
+                       else{
+                           Log.d("SHAKIL", "yap now passing from brac setting all to checked true");
                            rb_all.setChecked(true);
+                       }
                    }else{
                        sbankinCb.remove((String) rb_brac.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -342,7 +348,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_dbbl.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_dbbl.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -355,7 +366,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_exim.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_exim.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -368,7 +384,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_ific.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_ific.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -381,7 +402,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_prime.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_prime.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -395,10 +421,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_ab.getText());
                        setrb_all();
-                       if(sbankinCb.size() < 4)
+                       //new
+                       if(sbankinCb.size() < 14)
                            setBanktoListasCb();
                        else
                            rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_ab.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -411,7 +439,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_city.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_city.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -424,7 +457,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_hsbc.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_hsbc.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -437,7 +475,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_one.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_one.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -450,7 +493,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_premier.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_premier.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -464,7 +512,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b) {
                        sbankinCb.add((String) rb_scb.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_scb.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -477,7 +530,12 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_ucbl.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_ucbl.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
@@ -490,9 +548,32 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
                    if (b){
                        sbankinCb.add((String) rb_seb.getText());
                        setrb_all();
-                       setBanktoListasCb();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
                    }else{
                        sbankinCb.remove((String) rb_seb.getText());
+                       if(sbankinCb.size() == 0 && !rb_all.isChecked())
+                           rb_all.setChecked(true);
+                       setBanktoListasCb();
+                   }
+                   Log.d("SHAKIL", "now listbank size = "+sbankinCb.size()+" added bank="+rb_prime.getText());
+                   break;
+               case R.id.rb_dhaka:
+                   if (b){
+                       sbankinCb.add((String) rb_dhaka.getText());
+                       setrb_all();
+                       //new
+                       if(sbankinCb.size() < 14)
+                           setBanktoListasCb();
+                       else
+                           rb_all.setChecked(true);
+                       //setBanktoListasCb();
+                   }else{
+                       sbankinCb.remove((String) rb_dhaka.getText());
                        if(sbankinCb.size() == 0 && !rb_all.isChecked())
                            rb_all.setChecked(true);
                        setBanktoListasCb();
@@ -684,6 +765,8 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
             rb_ucbl.setChecked(false);
         if(rb_seb.isChecked())
             rb_seb.setChecked(false);
+        if(rb_dhaka.isChecked())
+            rb_dhaka.setChecked(false);
 
     }
 
@@ -701,5 +784,16 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
             return true;
         }
         return false;
+    }
+    @Override
+    public void onBackPressed() {
+        if(backPressedOnce){
+            finish();
+            super.onBackPressed();
+        }else{
+            Toast.makeText(getApplicationContext(), "Press back again to exit.",Toast.LENGTH_LONG).show();
+            backPressedOnce = true;
+        }
+
     }
 }

@@ -1,6 +1,8 @@
 package com.atm.atmlocator;
 
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -27,6 +29,10 @@ import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import modelClasses.BankModel;
 
 public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanoramaReadyCallback, LoaderManager.LoaderCallbacks<Cursor> {
@@ -38,12 +44,15 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
 
     //
     private TextView textv_atmName, textv_bankName, textv_address, textv_city, textv_state;
-
+    private LinearLayout linearv_atm;
     private Cursor cursor;
 
     //for add
     AdView adView;
     private LinearLayout linearv_add;
+    //
+    private boolean forMyLoc = false;
+    private String address, city, state;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +77,8 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         textv_address = (TextView) findViewById(R.id.textv_address);
         textv_city = (TextView) findViewById(R.id.textv_city);
         textv_state = (TextView) findViewById(R.id.textv_state);
-
+        //
+        linearv_atm = (LinearLayout) findViewById(R.id.linearv_atm);
         //for adview
         adView = (AdView) findViewById(R.id.adView);
         linearv_add = (LinearLayout) findViewById(R.id.linearv_add);
@@ -85,8 +95,18 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
             Toast.makeText(getApplicationContext(), "Something went wrong!!!", Toast.LENGTH_SHORT).show();
         }
 
+        // for users Current location
+        if(bname.equalsIgnoreCase("My Location")){
+            forMyLoc = true;
+        }
+
+        //setting toolbar title based on userlocMarker clicked or atm marker clicked
+        if(forMyLoc)
+            getSupportActionBar().setTitle("My Location");
+        else
+            getSupportActionBar().setTitle("Atm Details");
         //setting data received successfully from pre activity
-        if(detFetchSuc){
+        if(detFetchSuc && !forMyLoc){
             textv_atmName.setText(batmname);
             textv_bankName.setText(bname);
         }
@@ -97,13 +117,18 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
 
         // cursor loading
-        getSupportLoaderManager().initLoader(1, null, this);
+        if(!forMyLoc)
+            getSupportLoaderManager().initLoader(1, null, this);
+
+        // getting users address city location detals and set to layout
+        if(forMyLoc)
+            getAndSetUserLoc();
 
         //setting adview
-        //AdRequest adRequest = new AdRequest.Builder().build();
-        //adView.loadAd(adRequest);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
         //adView.setOnClickListener((View.OnClickListener) new CustomAdListener(this));
-        //adView.setAdListener(new CustomAdListener());
+        adView.setAdListener(new CustomAdListener());
 
     }
 
@@ -174,6 +199,32 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getAndSetUserLoc(){
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(lat, lng, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(addresses.size()>0) {
+            address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            city = addresses.get(0).getLocality();
+            state = addresses.get(0).getAdminArea();
+        }else{
+            address = "Sorry address not found";
+            city = "not found";
+            state = "not found";
+        }
+        textv_address.setText(address);
+        textv_city.setText(city);
+        textv_state.setText(state);
+        //
+        linearv_atm.setVisibility(View.GONE);
     }
 
     private class CustomAdListener extends com.google.android.gms.ads.AdListener {

@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_offline">AtmLocator</string>
     <string name="API_KEY">AIzaSyBwelRv3SDaXh4oJw-tJFfpJZlV9FHnzDI</string>
-    <string name="title_activity_offlinedtl">Atm Details</string>
+    <string name="title_activity_offlinedtl"></string>
     <string name="Offline_Bank_Spinner_Prompt">Select Bank</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 

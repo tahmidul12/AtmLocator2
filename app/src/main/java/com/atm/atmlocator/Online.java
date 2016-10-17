@@ -90,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import apiconstant.ApiSearch;
 import apiconstant.Constant;
@@ -159,6 +160,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     private LinearLayout linearv_add;
     // for track user last circle latlng previous circle lat long
     LatLng preCirLatLng;
+    // for app exit handle
+    private boolean backPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -372,8 +375,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         int height = relateV.getMeasuredHeight();
         CoordinatorLayout.LayoutParams floatLayoutParams = (CoordinatorLayout.LayoutParams) myFabOnline.getLayoutParams();
         CoordinatorLayout.LayoutParams floatLayoutParams2 = (CoordinatorLayout.LayoutParams) myFabCurrentLoc.getLayoutParams();
-        floatLayoutParams.topMargin = height - (int)(height/4);
-        floatLayoutParams2.topMargin = height - (int)(height/4);
+        floatLayoutParams.topMargin = height - (int)(height/3);
+        floatLayoutParams2.topMargin = height - (int)(height/3);
         //Log.d("SHAKIL", "now top margin of ="+floatLayoutParams.topMargin+ " and relate height="+height);
         myFabOnline.setLayoutParams(floatLayoutParams);
         myFabCurrentLoc.setLayoutParams(floatLayoutParams2);
@@ -392,6 +395,28 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 .strokeColor(Color.BLUE).fillColor(0x5500ff00)
                 .strokeWidth(3);
         circle = mMap.addCircle(circleOptions);
+
+        //marker adding new for handling if previous circle is at users current location
+        if(uLocDetected && userLatLng != null){
+            if(preCirLatLng.longitude == userLatLng.longitude && preCirLatLng.latitude == userLatLng.latitude){
+                MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title("My Location")
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
+                Marker marker1 = mMap.addMarker(centreMarker);
+            }
+            else{
+                MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+                Marker marker1 = mMap.addMarker(centreMarker);
+                listMarker.add(marker1);
+            }
+        }else{
+        MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title(cmarkerTitle)
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker6));
+        Marker marker1 = mMap.addMarker(centreMarker);
+        listMarker.add(marker1);
+        }
+        // added
+        //new
         mMap.setOnCameraChangeListener(new CamerachangeListener());
         mMap.setOnMapLongClickListener(new onMapLongClickListener());
         // adding marker click listener in googleMap
@@ -421,6 +446,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
+                if(!marker.getTitle().equalsIgnoreCase(cmarkerTitle) && !marker.getTitle().equalsIgnoreCase("My Location")) {
                 LatLng mLatLng = marker.getPosition();
                 Intent intent = new Intent(Online.this, Onlinedtl.class);
                 intent.putExtra("bname", marker.getTitle());
@@ -428,6 +454,21 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 intent.putExtra("lat", mLatLng.latitude);
                 intent.putExtra("lng", mLatLng.longitude);
                 startActivity(intent);
+                }else if(marker.getTitle().equalsIgnoreCase("My Location")){
+                    if(uLocDetected && userLatLng != null){
+                        //
+                        LatLng mLatLng = marker.getPosition();
+                        Intent intent = new Intent(Online.this, Onlinedtl.class);
+                        intent.putExtra("bname", marker.getTitle());
+                        intent.putExtra("batmname", marker.getSnippet());
+                        intent.putExtra("lat", mLatLng.latitude);
+                        intent.putExtra("lng", mLatLng.longitude);
+                        startActivity(intent);
+                        //
+                    }
+                }else{
+
+                }
                 //Toast.makeText(getApplicationContext(), "info Window clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -544,7 +585,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 CameraUpdate cu;
 
                 try {
-                    listAddress = gc.getFromLocationName(queryLocation, 1);
+                    listAddress = gc.getFromLocationName(queryLocation + "Bangladesh", 1);
                 } catch (IOException e) {
                     addGetSucful = false;
                     e.printStackTrace();
@@ -683,6 +724,9 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             LatLng to = marker.getPosition();
 
             if(!isInsideCircle(from, to))
+                marker.remove();
+            //new added
+            if(to.latitude == userLatLng.latitude && to.longitude == userLatLng.longitude)
                 marker.remove();
 
             //to remove the previous circles centre marker
@@ -948,6 +992,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             else if(v.getId() == R.id.myFabOnline){
                 Intent intent = new Intent(Online.this, Offline.class);
                 startActivity(intent);
+                //check
+                finish();
                 //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }else if(v.getId() == R.id.myFabCurrentLoc){
                 showUserLocOnMap();
@@ -967,7 +1013,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
            circle = mMap.addCircle(new CircleOptions().center(userLatLng).radius(Constant.CIRCLE_RADIUS_MIN).strokeColor(Color.BLUE).fillColor(0x5500ff00)
                    .strokeWidth(3));
            // adding a marker at the centre of the newly created circle
-           MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).title("My Location")
+           MarkerOptions centreMarker = new MarkerOptions().position(circle.getCenter()).snippet("").title("My Location")
                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker));
            Marker marker1 = mMap.addMarker(centreMarker);
            // not added to the list as it will remain forever even if a new circle is added
@@ -1257,6 +1303,18 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         //Home api key: AIzaSyDorQ-vpTTQMP5ypVhCEc-Zxfo5M6ZfF8U
         //Office api key: AIzaSyBwelRv3SDaXh4oJw-tJFfpJZlV9FHnzDI
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(backPressedOnce){
+            finish();
+            super.onBackPressed();
+        }else{
+            Toast.makeText(getApplicationContext(), "Press back again to exit.",Toast.LENGTH_LONG).show();
+            backPressedOnce = true;
+        }
+
     }
 }
 
