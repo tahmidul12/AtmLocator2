@@ -18,16 +18,24 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ToolBarStyle"
+            app:theme="@style/ToolBarStyle"/>
     </android.support.design.widget.AppBarLayout>
-    <LinearLayout android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
+        android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent"
+
+        android:weightSum="10"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
             android:id="@+id/viewA"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
             android:weightSum="10"
             android:orientation="vertical">
             <TextView
@@ -47,7 +55,7 @@
                 android:paddingRight="0dp"
                 android:paddingTop="0.5dp"
                 android:background="@drawable/map_back"
-                android:layout_weight="9.0">
+                android:layout_weight="10">
                 <com.atm.atmlocator.MapWrapperLayout
                     android:id="@+id/map_relative_layout"
                     android:layout_width="match_parent"
@@ -81,11 +89,11 @@
                     android:layout_weight="1"
                     android:layout_marginTop="0dp"/>
             </RelativeLayout>
-            <LinearLayout
+            <!--<LinearLayout
                 android:id="@+id/linearv_add"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:orientation="vertical"
                 android:layout_weight="1.0">
                 <com.google.android.gms.ads.AdView
@@ -95,7 +103,7 @@
                     ads:adSize = "BANNER"
                     ads:adUnitId ="@string/banner_ad_unit_id">
                 </com.google.android.gms.ads.AdView>
-            </LinearLayout>
+            </LinearLayout>-->
             <!--
                         <TextView
 
@@ -116,8 +124,23 @@
                             />
             -->
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearv_add"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:orientation="vertical"
+            android:layout_weight="1.0">
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                ads:adSize = "BANNER"
+                ads:adUnitId ="@string/banner_ad_unit_id">
+            </com.google.android.gms.ads.AdView>
+        </LinearLayout>
     </LinearLayout>
-
+    </ScrollView>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/myFabOnline"
         android:layout_width="wrap_content"

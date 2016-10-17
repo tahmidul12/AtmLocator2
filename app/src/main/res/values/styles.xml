@@ -20,18 +20,22 @@
 
     <style name="myDropDownItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
         <item name="android:textColor">@color/secondary_text_default_material_light</item>
-        <item name="android:popupBackground">@android:color/background_light</item>
+        <item name="android:textSize">14dp</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="myDropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:background">#FFF</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:textAppearance" tools:targetApi="m">@android:color/white</item>
+        <!--<item name="android:textAppearance" tools:targetApi="m">@android:color/white</item>-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="autoCompleteTextViewStyle">@style/myAutoCompleteTextViewStyle</item>
-        <item name="textAppearanceSearchResultTitle">@style/mySearchResult</item>
+        <!--<item name="autoCompleteTextViewStyle">@style/myAutoCompleteTextViewStyle</item>
+        <item name="textAppearanceSearchResultTitle">@style/mySearchResult</item>-->
     </style>
     <!-- for activity transition animation a style containing animation -->
     <style name="FadeOffline">
@@ -52,4 +56,15 @@
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="android:dropDownItemStyle">@style/myDropDownItemStyle</item>
+        <item name="android:dropDownListViewStyle">@style/myDropDownListViewStyle</item>
+        <!--<item name="autoCompleteTextViewStyle">@style/myAutoCompleteTextViewStyle</item>
+        <item name="textAppearanceSearchResultTitle">@style/mySearchResult</item>-->
+
+    </style>
 </resources>
