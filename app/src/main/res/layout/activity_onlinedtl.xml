@@ -22,13 +22,16 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_onlinedtl" />
-<!--
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_atm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
--->
+        app:layout_anchor="@+id/linearv_stv"
+        app:layout_anchorGravity="bottom|right|end"
+        android:backgroundTint="@color/white"
+        android:elevation="4dp"
+        android:layout_margin="33dp"
+        app:srcCompat="@mipmap/fslogo" />
+
 </android.support.design.widget.CoordinatorLayout>

@@ -23,15 +23,31 @@
             android:weightSum="10"
             android:orientation="vertical">
             <LinearLayout
+                android:id="@+id/linearv_stv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:minHeight="150dp"
                 android:layout_weight="4.0">
-                <fragment
-                    class="com.google.android.gms.maps.StreetViewPanoramaFragment"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:id="@+id/mapstreet"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent">
+                    <ProgressBar
+                        android:id="@+id/pb_atm"
+                        android:layout_gravity="center"
+                        android:visibility="visible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <ImageView
+                        android:id="@+id/imgv_atm"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/onlinelogo"/>
+                    <fragment
+                        class="com.google.android.gms.maps.StreetViewPanoramaFragment"
+                        android:layout_width="match_parent"
+                        android:id="@+id/mapstreet"
+                        android:layout_height="match_parent"/>
+                </FrameLayout>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/linearv_atm"
@@ -71,9 +87,18 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:gravity="top"
+                    android:orientation="vertical"
                     android:layout_weight="0.6">
+                    <TextView
+                        android:id="@+id/textv_floatbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="13sp"
+                        android:layout_marginTop="25dp"
+                        android:text="show StreetView"/>
                     <ImageView
-                        android:id="@+id/imgv_atm"
+                        android:id="@+id/imgv_atms"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
@@ -163,4 +188,18 @@
             -->
         </LinearLayout>
     </ScrollView>
+    <!--<android.support.design.widget.FloatingActionButton
+        android:id="@+id/myFabCurrentLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="220dp"
+        android:layout_marginBottom="0dp"
+        android:backgroundTint="#ffffff"
+        android:tint="@color/colorPrimary"
+        android:layout_gravity="right"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_mylocation"
+        app:fabSize="mini"
+        />-->
 </RelativeLayout>

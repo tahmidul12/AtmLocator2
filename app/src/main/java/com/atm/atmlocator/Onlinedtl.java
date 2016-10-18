@@ -1,9 +1,16 @@
 package com.atm.atmlocator;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +39,12 @@ import com.google.android.gms.maps.model.StreetViewPanoramaCamera;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
+import apiconstant.ApiAtmPic;
 import modelClasses.BankModel;
 
 public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanoramaReadyCallback, LoaderManager.LoaderCallbacks<Cursor> {
@@ -44,10 +55,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     private boolean detFetchSuc;
 
     //
-    private TextView textv_atmName, textv_bankName, textv_address, textv_city, textv_state;
+    private TextView textv_atmName, textv_bankName, textv_address, textv_city, textv_state, textv_floatbtn;
     private LinearLayout linearv_atm;
     private Cursor cursor;
-
+    private ProgressBar pb_atm;
     //for add
     AdView adView;
     private LinearLayout linearv_add;
@@ -55,6 +66,16 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     //
     private boolean forMyLoc = false;
     private String address, city, state;
+
+    //for showing atm image of bank
+    StreetViewPanoramaFragment streetViewPanoramaFragment;
+    private int atm_id = 1;
+    private boolean street_viewLoaded = false;
+    private boolean atmPic_loaded = false;
+    private boolean fabAtm_picMode = true;
+    private FloatingActionButton fab_atm;
+    private Activity activity;
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +95,12 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // init layout components other than map
+        fab_atm = (FloatingActionButton) findViewById(R.id.fab_atm);
+        fab_atm.setOnClickListener(new CustomOnClickListener());
+        fab_atm.setBackgroundTintList(ColorStateList.valueOf(Color
+                .parseColor("#ffffff")));
+        pb_atm = (ProgressBar) findViewById(R.id.pb_atm);
+        textv_floatbtn = (TextView) findViewById(R.id.textv_floatbtn);
         textv_atmName = (TextView) findViewById(R.id.textv_atmName);
         textv_bankName = (TextView) findViewById(R.id.textv_bankName);
         textv_address = (TextView) findViewById(R.id.textv_address);
@@ -115,9 +142,13 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         }
 
         //setting the streetview
-        StreetViewPanoramaFragment streetViewPanoramaFragment = (StreetViewPanoramaFragment) getFragmentManager()
+        streetViewPanoramaFragment = (StreetViewPanoramaFragment) getFragmentManager()
                 .findFragmentById(R.id.mapstreet);
-        streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
+        streetViewPanoramaFragment.getView().setVisibility(View.GONE);
+        activity = this;
+        context = getApplicationContext();
+        // when float buton for street view will be clicked then this line will be executed
+        //streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
 
         // cursor loading
         if(!forMyLoc)
@@ -133,11 +164,17 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         //adView.setOnClickListener((View.OnClickListener) new CustomAdListener(this));
         adView.setAdListener(new CustomAdListener());
 
+        //
+        if(fabAtm_picMode){
+            new AtmPicAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
     }
 
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
         if(atmLatLng != null){
+            street_viewLoaded = true;
             streetViewPanorama.setPosition(atmLatLng);
             StreetViewPanoramaCamera camera = new StreetViewPanoramaCamera.Builder().bearing(180).build();
             streetViewPanorama.animateTo(camera, 1000);
@@ -165,6 +202,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
 
     }
 
+    private void setStreetViewtoAsync(){
+        streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
+    }
+
     private void addDatatoList() {
 
         String bname, batmname, baddress, lati, longi, state, city;
@@ -179,6 +220,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
                 city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
                 state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
                 if(lat == Double.parseDouble(lati) && lng == Double.parseDouble(longi)) {
+                    atm_id = cursor.getInt(cursor.getColumnIndex(AtmProvider._ID));
                     found = true;
                     break;
                 }
@@ -231,6 +273,69 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         //
         if(imgv_atm.getVisibility() == View.VISIBLE || imgv_atm.getVisibility() == View.INVISIBLE)
            imgv_atm.setVisibility(View.GONE);
+    }
+
+    private class CustomOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            if(fabAtm_picMode) {
+                fabAtm_picMode = false;
+                imgv_atm.setVisibility(View.GONE);
+                textv_floatbtn.setText("show AtmPic");
+                streetViewPanoramaFragment.getView().setVisibility(View.VISIBLE);
+                // load street view
+                if(!street_viewLoaded){
+                    setStreetViewtoAsync();
+                }
+            }
+            else{
+                fabAtm_picMode = true;
+                imgv_atm.setVisibility(View.VISIBLE);
+                textv_floatbtn.setText("show StreetView");
+                streetViewPanoramaFragment.getView().setVisibility(View.GONE);
+                if(!atmPic_loaded){
+                    new AtmPicAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+        }
+    }
+
+    private class AtmPicAsync extends AsyncTask<Void, Void, String>{
+        Bitmap bitmapAtm = null;
+        @Override
+        protected void onPreExecute() {
+            if(pb_atm != null)
+                pb_atm.setVisibility(View.VISIBLE);
+            Log.d("SHAKIL", "progressbar should be visible");
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            String url = ApiAtmPic.API_ATM_PIC + Integer.toString(atm_id);
+            Log.d("SHAKIL", "image url = "+url);
+            try {
+                InputStream in = new URL(url).openStream();
+                bitmapAtm = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(pb_atm != null)
+                pb_atm.setVisibility(View.GONE);
+            if(bitmapAtm != null){
+                atmPic_loaded = true;
+                imgv_atm.setImageBitmap(bitmapAtm);
+            }
+            super.onPostExecute(s);
+        }
     }
 
     private class CustomAdListener extends com.google.android.gms.ads.AdListener {
