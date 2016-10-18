@@ -92,6 +92,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import apiconstant.ApiSearch;
 import apiconstant.Constant;
@@ -164,6 +165,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
     LatLng preCirLatLng;
     // for app exit handle
     private boolean backPressedOnce = false;
+    //
+    Marker markerCentre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -351,7 +354,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     seekBar.setAlpha((float) 0.5);
                     removeMarker();
-                    //addMarker();
+                    //newly modified
+                    addMarker();
                     //Log.d("SHAKIL", "on stop tracking touch");
                 }
             });
@@ -661,6 +665,107 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_dbbl:
+                //Log.d("SHAKIL", "bank selected="+item.getTitle().toString());
+                Marker mar = getMarkerCentre();
+                listMarker.clear();
+                //Log.d("SHAKIL", "yap marker centre found="+mar.getPosition());
+                listMarker.add(mar);
+                //removeMarkerByBankName(item.getTitle().toString());
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_brack:
+                Marker mar1 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar1);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_ab:
+                //Log.d("SHAKIL", "bank selected="+item.getTitle().toString());
+                //Log.d("SHAKIL", "bank selected="+item.getTitle().toString());
+                Marker mar2 = getMarkerCentre();
+                listMarker.clear();
+                //Log.d("SHAKIL", "yap marker centre found="+mar2.getPosition());
+                listMarker.add(mar2);
+                //removeMarkerByBankName(item.getTitle().toString());
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_city:
+                Marker mar3 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar3);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_ebl:
+                Marker mar4 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar4);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_exim:
+                Marker mar5 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar5);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_hsbc:
+                Marker mar6 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar6);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_ific:
+                Marker mar7 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar7);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_one:
+                Marker mar8 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar8);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_premier:
+                Marker mar9 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar9);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_prime:
+                Marker mar10 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar10);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_scb:
+                Marker mar11 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar11);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_seb:
+                Marker mar12 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar12);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_ucbl:
+                Marker mar13 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar13);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            case R.id.menu_dhaka:
+                Marker mar14 = getMarkerCentre();
+                listMarker.clear();
+                listMarker.add(mar14);
+                addMarkerByBankName(item.getTitle().toString());
+                break;
+            default:
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -739,8 +844,10 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
             if(!isInsideCircle(from, to))
                 marker.remove();
             //new added
-            if(to.latitude == userLatLng.latitude && to.longitude == userLatLng.longitude)
-                marker.remove();
+            if(uLocDetected && userLatLng != null) {
+                if (to.latitude == userLatLng.latitude && to.longitude == userLatLng.longitude)
+                    marker.remove();
+            }
 
             //to remove the previous circles centre marker
             if(to.latitude != from.latitude && to.longitude != from.longitude && marker.getTitle().equalsIgnoreCase(cmarkerTitle)) {
@@ -748,6 +855,70 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 Log.d("SHAKIL", "yap here pcircle = "+to+" and new circle = "+from+" and now it is to be removed to will be removed");
             }
         }
+    }
+
+    private void removeMarkerByBankName(String bankName){
+        if(listMarker.size()>0){
+            Log.d("SHAKIL", "now listMarker size = "+listMarker.size());
+            for(Marker marker : listMarker){
+
+                if(!marker.getTitle().equalsIgnoreCase(cmarkerTitle)){
+                    //listMarker.remove(marker);
+                    marker.remove();
+                }else{
+                    markerCentre = marker;
+                }
+            }
+            Log.d("SHAKIL", "now after remoging listMarker size = "+listMarker.size());
+        }
+    }
+
+    private Marker getMarkerCentre() {
+        Marker markerc = null;
+        if(listMarker.size()>0){
+
+            Log.d("SHAKIL", "now listMarker size = "+listMarker.size());
+            for(Marker marker : listMarker){
+
+                if(marker.getTitle().equalsIgnoreCase(cmarkerTitle)) {
+                    markerc = marker;
+                }else{
+                    marker.remove();
+                }
+            }
+
+            //Log.d("SHAKIL", ""+listMarker.size());
+        }
+        return markerc;
+    }
+
+    private void addMarkerByBankName(String bankNames){
+        if (cursor.moveToFirst()) {
+            do{
+                double lat = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LAT)));
+                double longi = Double.parseDouble(cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI)));
+                String bankName = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                String batmNmae = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                LatLng from = circle.getCenter();
+                LatLng to = new LatLng(lat, longi);
+                if(isInsideCircle(from, to) && from.latitude != to.latitude && from.longitude != to.longitude && bankName.equalsIgnoreCase(bankNames)) {
+                    //adding a marker
+                    MarkerOptions myOffice = new MarkerOptions().position(to).snippet(batmNmae).title(bankName)
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.litemlogo));
+                    Marker marker1 = mMap.addMarker(myOffice);
+                    listMarker.add(marker1);
+                }
+            } while (cursor.moveToNext());
+        }
+        /*if(listMarker.size()>0){
+            for(Marker marker: listMarker){
+                if(marker.getTitle().equalsIgnoreCase(bankName)){
+                    Marker markers = mMap.addMarker(new MarkerOptions().position(marker.getPosition()).snippet(marker.getSnippet()).title(marker.getTitle())
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.litemlogo)));
+                    //listMarker.add(markers);
+                }
+            }
+        }*/
     }
 
     //below 6 functions for handling user current location
@@ -763,7 +934,15 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         super.onStop();
         if(mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
-        preCirLatLng = new LatLng(circle.getCenter().latitude, circle.getCenter().longitude);
+
+        boolean catched = false;
+        try {
+            preCirLatLng = new LatLng(circle.getCenter().latitude, circle.getCenter().longitude);
+        } catch (Exception e) { e.printStackTrace(); catched = true;}
+        if(catched){
+            preCirLatLng = new LatLng(Constant.DEFAULT_CIRCLE_LAT, Constant.DEFAULT_CIRCLE_LNG);
+        }
+
         SharedPreferences preferences = getSharedPreferences(Constant.SHARED_PREFERENCE_ATMLOCATOR, 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(Constant.CIRCLE_LAST_LAT, Double.toString(preCirLatLng.latitude));
@@ -998,6 +1177,21 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                 showAnim = false;
                 if(imButtonDir.getVisibility() == View.VISIBLE)
                      imButtonDir.setVisibility(View.INVISIBLE);
+                //then animate camera and zoom to those two points only for a better view of the fetched direction from marker to circle centre
+                LatLngBounds bound;
+                CameraUpdate cu;
+                bound = toBounds(origin, SphericalUtil.computeDistanceBetween(origin, dest));
+                mMap.setPadding(10, 10, 10, 30);
+                cu = CameraUpdateFactory.newLatLngBounds(bound, 0);
+                mMap.animateCamera(cu, 1000, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                    }
+
+                    @Override
+                    public void onCancel() {
+                    }
+                });
             }
             else if(v.getId() == R.id.myFabOnline){
                 Intent intent = new Intent(Online.this, Offline.class);
