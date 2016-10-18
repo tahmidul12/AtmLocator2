@@ -1088,6 +1088,8 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         city = jsonArray.getJSONObject(i).getString("City");
                         state = jsonArray.getJSONObject(i).getString("State");
                         country = jsonArray.getJSONObject(i).getString("Country");
+                        String ids = jsonArray.getJSONObject(i).getString("Id");
+                        Log.d("SHAKIL", "yap retrieved id = "+ids);
                         ContentValues values = new ContentValues();
 
                         values.put(AtmProvider.BANK, bank);
@@ -1098,6 +1100,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
                         values.put(AtmProvider.CITY, city);
                         values.put(AtmProvider.STATE, state);
                         values.put(AtmProvider.COUNTRY, country);
+                        values.put(AtmProvider.IDS, ids);
 
 
                         Uri uri = getContentResolver().insert(

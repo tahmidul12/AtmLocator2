@@ -34,14 +34,13 @@
                     <ProgressBar
                         android:id="@+id/pb_atm"
                         android:layout_gravity="center"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <ImageView
                         android:id="@+id/imgv_atm"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@mipmap/onlinelogo"/>
+                        android:layout_height="match_parent"/>
                     <fragment
                         class="com.google.android.gms.maps.StreetViewPanoramaFragment"
                         android:layout_width="match_parent"
@@ -143,19 +142,23 @@
                     android:layout_weight="1"
                     android:textSize="14sp"
                     android:text="city"/>
-                <TextView
+                <!--<TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.0"
+                    android:drawableLeft="@mipmap/latlnglogo"
                     android:text="State:"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"/>-->
                 <TextView
                     android:id="@+id/textv_state"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
+                    android:drawableLeft="@mipmap/latlnglogo"
+                    android:drawablePadding="0dp"
                     android:textSize="14sp"
-                    android:text=""/>
+                    android:gravity="center"
+                    android:text="lat:23.4343434 and longitude: 23342424"/>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/linearv_add"

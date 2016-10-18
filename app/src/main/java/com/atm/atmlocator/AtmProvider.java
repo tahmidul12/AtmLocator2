@@ -35,6 +35,7 @@ public class AtmProvider extends ContentProvider {
     static final String CITY = "city";
     static final String STATE = "state";
     static final String COUNTRY = "country";
+    static final String IDS = "ids";
 
     private static HashMap<String, String> STUDENTS_PROJECTION_MAP;
 
@@ -65,7 +66,8 @@ public class AtmProvider extends ContentProvider {
                     " address TEXT NOT NULL, " +
                     " city TEXT NOT NULL, " +
                     " state TEXT NOT NULL, " +
-                    " country TEXT NOT NULL);";
+                    " country TEXT NOT NULL, "+
+                    " ids TEXT NOT NULL);";
 
     /**
      * Helper class that actually creates and manages
@@ -165,7 +167,7 @@ public class AtmProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         int count = 0;
 
-        switch (uriMatcher.match(uri)){
+        switch (uriMatcher.match(uri)) {
             case ATM:
                 count = db.delete(BANK_TABLE_NAME, selection, selectionArgs);
                 break;

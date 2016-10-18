@@ -66,6 +66,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
     //
     private boolean forMyLoc = false;
     private String address, city, state;
+    private String lats = null, lngs = null;
 
     //for showing atm image of bank
     StreetViewPanoramaFragment streetViewPanoramaFragment;
@@ -165,9 +166,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         adView.setAdListener(new CustomAdListener());
 
         //
-        if(fabAtm_picMode){
-            new AtmPicAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+
 
     }
 
@@ -208,19 +207,23 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
 
     private void addDatatoList() {
 
-        String bname, batmname, baddress, lati, longi, state, city;
+        String bnames, batmnames, baddress, lati, longi, state, city;
         boolean found = false;
         if (cursor.moveToFirst()) {
             do{
-                bname = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
-                batmname = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
+                bnames = cursor.getString(cursor.getColumnIndex(AtmProvider.BANK));
+                batmnames = cursor.getString(cursor.getColumnIndex(AtmProvider.ATM_NAME));
                 lati = cursor.getString(cursor.getColumnIndex(AtmProvider.LAT));
                 longi = cursor.getString(cursor.getColumnIndex(AtmProvider.LONGI));
                 baddress = cursor.getString(cursor.getColumnIndex(AtmProvider.ADDRESS));
                 city = cursor.getString(cursor.getColumnIndex(AtmProvider.CITY));
                 state = cursor.getString(cursor.getColumnIndex(AtmProvider.STATE));
-                if(lat == Double.parseDouble(lati) && lng == Double.parseDouble(longi)) {
-                    atm_id = cursor.getInt(cursor.getColumnIndex(AtmProvider._ID));
+                if(lat == Double.parseDouble(lati) && lng == Double.parseDouble(longi)
+                        && bnames.equalsIgnoreCase(bname) && batmnames.equalsIgnoreCase(batmname)) {
+                    atm_id = cursor.getInt(cursor.getColumnIndex(AtmProvider.IDS));
+                    lats = lati;
+                    lngs = longi;
+                    Log.d("SHAKIL", "atm id = "+atm_id);
                     found = true;
                     break;
                 }
@@ -230,8 +233,11 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
             if(found){
                 textv_address.setText(baddress);
                 textv_city.setText(city);
-                textv_state.setText(state);
+                textv_state.setText("Latitude : "+lats+", Longitude : "+lngs );
                 found = false;
+            }
+            if(fabAtm_picMode){
+                new AtmPicAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
         }
@@ -269,10 +275,10 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         textv_bankName.setText("MY LOCATION");
         textv_address.setText(address);
         textv_city.setText(city);
-        textv_state.setText(state);
+        textv_state.setText("Latitude: "+Double.toString(lat) + ", Longitude: "+Double.toString(lng));
         //
-        if(imgv_atm.getVisibility() == View.VISIBLE || imgv_atm.getVisibility() == View.INVISIBLE)
-           imgv_atm.setVisibility(View.GONE);
+        //if(imgv_atm.getVisibility() == View.VISIBLE || imgv_atm.getVisibility() == View.INVISIBLE)
+           //imgv_atm.setVisibility(View.GONE);
     }
 
     private class CustomOnClickListener implements View.OnClickListener {
