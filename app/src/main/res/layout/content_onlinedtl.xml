@@ -57,7 +57,7 @@
                 android:padding="5dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:background="@drawable/dtltopback">
+                android:background="@drawable/dtltopbackonline">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -114,33 +114,37 @@
                 android:orientation="vertical"
                 android:layout_marginTop="0dp"
                 android:gravity="center"
-                android:padding="15dp"
-                android:background="@drawable/dtlmidback">
-                <TextView
+                android:paddingTop="9dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:background="@drawable/dtlmidbackonline">
+                <!--<TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:text="Address:"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"/>-->
                 <TextView
                     android:id="@+id/textv_address"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="2"
-                    android:textSize="14sp"
+                    android:layout_weight="2.5"
+                    android:textSize="15sp"
                     android:text=""/>
-                <TextView
+                <!--<TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:text="City:"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"/>-->
                 <TextView
                     android:id="@+id/textv_city"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
+                    android:layout_weight="1.5"
+                    android:textSize="15sp"
                     android:text="city"/>
                 <!--<TextView
                     android:layout_width="match_parent"
@@ -153,11 +157,11 @@
                     android:id="@+id/textv_state"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:drawableLeft="@mipmap/latlnglogo"
                     android:drawablePadding="0dp"
                     android:textSize="14sp"
-                    android:gravity="center"
+                    android:gravity="center_vertical"
                     android:text="lat:23.4343434 and longitude: 23342424"/>
             </LinearLayout>
             <LinearLayout
