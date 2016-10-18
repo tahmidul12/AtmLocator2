@@ -87,6 +87,7 @@ public class Offline extends AppCompatActivity implements LoaderManager.LoaderCa
         setSupportActionBar(toolbar);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setTitle("AtmLocator");
+        getSupportActionBar().setElevation(4);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(Color

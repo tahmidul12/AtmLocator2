@@ -29,6 +29,7 @@ public class Offlinedtl extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setElevation(4);
         //getSupportActionBar().setTitle("AtmLocator");
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -177,6 +177,7 @@ public class Online extends AppCompatActivity implements OnMapReadyCallback , Lo
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.mipmap.ic_launcher);
+        getSupportActionBar().setElevation(4);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation((float)5);
         }

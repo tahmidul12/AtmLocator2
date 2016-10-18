@@ -94,6 +94,7 @@ public class Onlinedtl extends AppCompatActivity implements OnStreetViewPanorama
         });
         */
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(4);
 
         // init layout components other than map
         fab_atm = (FloatingActionButton) findViewById(R.id.fab_atm);
